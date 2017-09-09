@@ -1,0 +1,106 @@
+/*common   css*/
+*{
+	margin:0;
+	padding: 0;
+	box-sizing:border-box;
+}
+.clearfix:before,
+.clearfix:after {
+	content: "";
+	display: table;
+}
+.clearfix:after {
+	clear: both;
+}
+body{
+	font: 14px/1.5 "Helvetica Neue",Helvetica,Arial,"Microsoft Yahei","Hiragino Sans GB","Heiti SC","WenQuanYi Micro Hei",sans-serif;
+	-webkit-overflow-scrolling:touch; /*流畅滚动手机端*/
+	color:#fff;
+}
+a{
+	text-decoration: none;
+}
+ul,ol{
+	list-style-position: inside;
+}
+a,button,input,optgroup,select,textarea {
+    -webkit-tap-highlight-color:rgba(0,0,0,0); /*去掉a、input和button点击时的蓝色外边框和灰色半透明背景*/
+}
+a, img {
+    -webkit-touch-callout: none; /*禁止长按链接与图片弹出菜单*/
+}
+
+/*section css*/
+.top{
+	width: 100%;
+	height: 60px;
+	background-color:#2196F3;
+	position: fixed;
+	top:0;
+	left: 0;
+	z-index: 1;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+.button{
+	background-color:#1976D2;
+	width: 4rem;
+	height: 4rem;
+	font-size: 2rem;
+	border-radius: 50%;
+	text-align: center;
+	line-height: 4rem;
+	position: fixed;
+	left: 50%;
+	margin-left: -2rem;
+	top:20px;
+	box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+	transition:all 0.3s ease 0.2s;
+	z-index: 2;
+}
+.button:hover{
+	top:30px;
+	box-shadow: 0 2px 3px rgba(0,0,0,0.2);
+}
+.button a{
+	color:#fff;
+	font-size: 1.4rem;
+}
+
+/*post.html*/
+.post-title{
+	color:#777777;
+	text-align: center;
+	margin-top: 80px;
+}
+.blogs{
+	color:#777777;
+	margin: 0 auto;
+	padding: 2%;
+	max-width: 800px;
+	line-height: 1.8;
+	/*font-size: 1.1rem;*/
+}
+blockquote,code{
+	border-left: 5px solid #00BCD4;
+	background-color: #F0F0F0;
+	padding: 15px;
+	overflow: auto;
+	display: block;
+}
+code{
+	border-left: 5px solid #00BCD4;
+	font-family: monospace;
+	font-size: 13px;
+	color:#000;
+}
+.blogs ul,ol{
+	padding-left: 15px;
+}
+.blogs ul{
+	list-style-type: disc;
+}
+.blogs img{
+	display: block;
+	margin: 10px auto;
+	width: 96%;
+}

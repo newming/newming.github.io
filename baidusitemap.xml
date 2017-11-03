@@ -5,10 +5,10 @@
     
   <url>
     <loc>https://newming.github.io/2017/11/03/words-for-it/</loc>
-    <lastmod>2017-11-03T02:11:42.947Z</lastmod>
+    <lastmod>2017-11-03T02:24:00.143Z</lastmod>
     <data>
         <display>
-        <title>words-for-it</title>
+        <title>IT 必备词汇</title>
         <pubTime>2017-11-03T02:10:29.000Z</pubTime>
         
         <tag>English</tag>
@@ -17,6 +17,26 @@
            
              
               <breadCrumb title="前端" url="https://newming.github.io/categories/%E5%89%8D%E7%AB%AF/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://newming.github.io/2017/09/07/introduce/</loc>
+    <lastmod>2017-11-03T02:22:08.439Z</lastmod>
+    <data>
+        <display>
+        <title>introduce</title>
+        <pubTime>2017-09-07T04:59:46.000Z</pubTime>
+        
+        <tag>介绍</tag>
+         
+         
+           
+             
+              <breadCrumb title="文章" url="https://newming.github.io/categories/%E6%96%87%E7%AB%A0/"/>
           
         </display>
     </data>
@@ -37,26 +57,6 @@
            
              
               <breadCrumb title="前端" url="https://newming.github.io/categories/%E5%89%8D%E7%AB%AF/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://newming.github.io/2017/09/07/introduce/</loc>
-    <lastmod>2017-09-09T10:52:22.000Z</lastmod>
-    <data>
-        <display>
-        <title>introduce</title>
-        <pubTime>2017-09-07T04:59:46.000Z</pubTime>
-        
-        <tag>介绍</tag>
-         
-         
-           
-             
-              <breadCrumb title="文章" url="https://newming.github.io/categories/%E6%96%87%E7%AB%A0/"/>
           
         </display>
     </data>

@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://newming.github.io/"/>
-  <updated>2017-09-21T02:06:30.000Z</updated>
+  <updated>2017-11-03T02:11:42.947Z</updated>
   <id>https://newming.github.io/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>words-for-it</title>
+    <link href="https://newming.github.io/2017/11/03/words-for-it/"/>
+    <id>https://newming.github.io/2017/11/03/words-for-it/</id>
+    <published>2017-11-03T02:10:29.000Z</published>
+    <updated>2017-11-03T02:11:42.947Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="This-document-will-put-some-words-in-common-usage"><a href="#This-document-will-put-some-words-in-common-usage" class="headerlink" title="This document will put some words in common usage"></a>This document will put some words in common usage</h1><ul><li>serial 连续的（中间件的处理，one after another）</li><li>parallel 平行的</li><li>exected 执行</li><li>faded 消失</li><li>reliable 可靠地</li><li>secure 安全的</li><li>offine mode 离线模式</li><li>deterministic 确定性</li><li>network performance 网络性能</li><li>queue up 排队</li><li>avoid 避免</li><li>upgrade 升级</li><li>continuous integration 持续集成</li><li>authority 权利，权限</li><li>authorise 授权，批准，委托</li><li>stability: 稳定性</li><li>standard: 标准的</li><li>constant: n常量</li><li>variable: n变量</li><li>dictionary: n字典</li><li>integer: n整数，整型</li><li>keyword n关键字</li><li>static: adj静态的</li><li>class: n 类</li><li>subclass: n 子类</li><li>superclass: n父类</li><li>polymorphism: n多态 inherit v继承</li><li>inheritance: n继承</li><li>interface: n接口</li><li>structure: n结构</li><li>instance: n 实例</li><li>property: n 属性</li><li>enumeration: n枚举</li><li>function: n 函数</li><li>parameter: n 参数</li><li>functionality: n功能</li><li>method: n 方法</li><li>element: n元素</li><li>call: v 调用</li><li>random: adj 随机的</li><li>generate: v产生，生成</li><li>generator: n生成器</li><li>implement: v实现</li><li>implementation: n实现</li><li>expression: n表达式</li><li>scope: n 范围 区域</li><li>initial: adj 最初的</li><li>initializer: n 初始化方法</li><li>initialization n初始化</li><li>deinitializer: n析构方法</li><li>item: n 项目; 条，条款; 一则</li><li>encapsulate: v封装</li><li>protocol: n 协议</li><li>delegate: v代理</li><li>delegation: n 代理</li><li>extend: v 拓展</li><li>extension: n拓展</li><li>external: adj 外部的</li><li>conform: v 遵守，遵照，遵循</li><li>iterate: v迭代</li><li>loop: n 循环</li><li>downcast: v向下转型</li><li>unwrap: v 拆箱</li><li>force-unwrap: v 强制拆箱</li><li>statement: n声明</li><li>optional: adj 可选的</li><li>code snippet: n 代码片段</li><li>define: v 定义</li><li>definition: n定义</li><li>contain: v 包含</li><li>query: v查询</li><li>particular: adj 特定的</li><li>type casting: 类型转换</li><li>cast: v 转换</li><li>operator: n 操作符</li><li>hierarchy: n 层次体系</li><li>subscript: n脚本</li><li>comma: n冒号</li><li>access: v访问，获取</li><li>exclamation mark: n感叹号</li><li>assign: v 赋值</li><li>assignment: n赋值</li><li>increase: v 增加 ，增大，增多</li><li>increasement: n 增加 ，增大，增多</li><li>decrease: v减少，减小</li><li>decreasement: v 减少，减小</li><li>global: adj 全局的</li><li>closure: n闭包</li><li>allocate: v分配</li><li>memory: n内存</li><li>reference: n引用</li><li>observe: v观察</li><li>observer: n观察者</li><li>modify: v修改</li><li>format: n格式</li><li>sort: v排序</li><li>nested: adj 嵌套的</li><li>reuse: v复用，重用</li><li>entity: n实体</li><li>public: adj 公共的，公开的</li><li>private: adj 私有的</li><li>internal: adj内部的</li><li>framework: n框架</li><li>unit test: 单元测试</li><li>associate: v关联</li><li>generic: n 范型</li><li>collection: n集合</li><li>swap: v交换</li><li>original: adj初始的</li><li>compile: v编译</li><li>characteristic: n性质</li><li>override: v重写，复写</li><li>overload: v重载</li><li>index: n索引</li><li>syntax: n语法</li></ul>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;This-document-will-put-some-words-in-common-usage&quot;&gt;&lt;a href=&quot;#This-document-will-put-some-words-in-common-usage&quot; class=&quot;headerlink&quot; t
+      
+    
+    </summary>
+    
+      <category term="前端" scheme="https://newming.github.io/categories/%E5%89%8D%E7%AB%AF/"/>
+    
+    
+      <category term="English" scheme="https://newming.github.io/tags/English/"/>
+    
+  </entry>
   
   <entry>
     <title>数组排序算法</title>

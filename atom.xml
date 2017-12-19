@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://newming.github.io/"/>
-  <updated>2017-12-15T07:11:33.653Z</updated>
+  <updated>2017-12-19T06:24:06.249Z</updated>
   <id>https://newming.github.io/</id>
   
   <author>
@@ -15,6 +15,32 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>position-sticky</title>
+    <link href="https://newming.github.io/2017/12/19/position-sticky/"/>
+    <id>https://newming.github.io/2017/12/19/position-sticky/</id>
+    <published>2017-12-19T06:02:30.000Z</published>
+    <updated>2017-12-19T06:24:06.249Z</updated>
+    
+    <content type="html"><![CDATA[<p>今天带来的是一个逆天的 css 属性，position: <code>sticky</code>。粘性定位。</p><p>相信大家对 css 中 <code>position</code> 属性的用法不陌生，那么今天这个属性是做什么的呢？他就是用来做吸顶的效果的，不需要 js 计算，只需要两条 css 属性即可。</p><p>请看下方效果，标题 A,C,E,T等自动吸顶。</p><p></p><p data-height="265" data-theme-id="0" data-slug-hash="RxraOx" data-default-tab="html,result" data-user="newming" data-embed-version="2" data-pen-title="粘性定位" class="codepen">See the Pen <a href="https://codepen.io/newming/pen/RxraOx/" target="_blank" rel="external">粘性定位</a> by newming (<a href="https://codepen.io/newming" target="_blank" rel="external">@newming</a>) on <a href="https://codepen.io" target="_blank" rel="external">CodePen</a>.</p><p></p><script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script><p>其中核心代码就只有两句 css。其中 top 为吸顶效果的边界值。我们可以想像成加了 sticky 属性后，这个元素会自动去按照我们的给定的边界值计算，具体表现为什么。具体来说就是按照 position: fixed; 来算。比如例子中，当标题 fixed 后，它当前的位置的值如果比我们给定的 -1px 小，就表现为 fixed 的效果，如果大于 -1px，表现为 relative 效果</p><figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">position</span>: <span class="selector-tag">sticky</span>;</div><div class="line"><span class="selector-tag">top</span>: <span class="selector-tag">-1px</span>;</div></pre></td></tr></table></figure><p>综上，sticky 会变现出两种其他 position 效果，当小于边界值，为 fixed，反之则 relative。有个蛋疼的地方是： android 表现不佳。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;今天带来的是一个逆天的 css 属性，position: &lt;code&gt;sticky&lt;/code&gt;。粘性定位。&lt;/p&gt;
+&lt;p&gt;相信大家对 css 中 &lt;code&gt;position&lt;/code&gt; 属性的用法不陌生，那么今天这个属性是做什么的呢？他就是用来做吸顶的效果的，不需要 
+      
+    
+    </summary>
+    
+      <category term="前端" scheme="https://newming.github.io/categories/%E5%89%8D%E7%AB%AF/"/>
+    
+    
+      <category term="css" scheme="https://newming.github.io/tags/css/"/>
+    
+  </entry>
   
   <entry>
     <title>custom-range-style</title>

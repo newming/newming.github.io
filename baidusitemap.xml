@@ -4,6 +4,44 @@
 
     
   <url>
+    <loc>https://newming.github.io/2017/09/07/introduce/</loc>
+    <lastmod>2017-12-27T03:08:12.711Z</lastmod>
+    <data>
+        <display>
+        <title>introduce</title>
+        <pubTime>2017-09-07T04:59:46.000Z</pubTime>
+        
+         
+           
+             
+              <breadCrumb title="文章" url="https://newming.github.io/categories/%E6%96%87%E7%AB%A0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://newming.github.io/2017/12/27/tail/</loc>
+    <lastmod>2017-12-27T03:06:26.773Z</lastmod>
+    <data>
+        <display>
+        <title>tail 命令</title>
+        <pubTime>2017-12-27T03:05:01.000Z</pubTime>
+        
+        <tag>shell</tag>
+         
+         
+           
+             
+              <breadCrumb title="shell" url="https://newming.github.io/categories/shell/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://newming.github.io/2017/12/26/dom-model/</loc>
     <lastmod>2017-12-26T11:59:15.647Z</lastmod>
     <data>
@@ -97,26 +135,6 @@
            
              
               <breadCrumb title="前端" url="https://newming.github.io/categories/%E5%89%8D%E7%AB%AF/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://newming.github.io/2017/09/07/introduce/</loc>
-    <lastmod>2017-11-03T02:22:08.440Z</lastmod>
-    <data>
-        <display>
-        <title>introduce</title>
-        <pubTime>2017-09-07T04:59:46.000Z</pubTime>
-        
-        <tag>介绍</tag>
-         
-         
-           
-             
-              <breadCrumb title="文章" url="https://newming.github.io/categories/%E6%96%87%E7%AB%A0/"/>
           
         </display>
     </data>

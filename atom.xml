@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://newming.github.io/"/>
-  <updated>2017-12-26T11:59:15.647Z</updated>
+  <updated>2017-12-27T03:06:26.773Z</updated>
   <id>https://newming.github.io/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>tail 命令</title>
+    <link href="https://newming.github.io/2017/12/27/tail/"/>
+    <id>https://newming.github.io/2017/12/27/tail/</id>
+    <published>2017-12-27T03:05:01.000Z</published>
+    <updated>2017-12-27T03:06:26.773Z</updated>
+    
+    <content type="html"><![CDATA[<p>用途:从指定点开始将文件写到标准输出。使用tail命令的-f选项可以方便的查阅正在改变的日志文件，tail -f filename会把filename里最尾部的内容显示在屏幕上，并且不但刷新，使你看到最新的文件内容。</p><blockquote><p>tail 命令从指定点开始将 File 参数指定的文件写到标准输出。如果没有指定文件，则会使用标准输入。 Number 变量指定将多少单元写入标准输出。 Number 变量的值可以是正的或负的整数。如果值的前面有 +（加号），从文件开头指定的单元数开始将文件写到标准输出。如果值的前面有 -（减号），则从文件末尾指定的单元数开始将文件写到标准输出。如果值前面没有 +（加号）或 -（减号），那么从文件末尾指定的单元号开始读取文件。</p></blockquote><p>Number 变量用于确定计数的起点的单元类型由 -b、-c、-k、-m 以及 -n 标志确定。如果没有指定其中的任何一个标志，那么 tail 命令就会读取指定文件的最后十行，并将其写到标准输出。这与在命令行输入 -n 10 是相同的。</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">tail -h</div><div class="line"><span class="comment"># tail [-F | -f | -r] [-q] [-b # | -c # | -n #] [file ...]</span></div></pre></td></tr></table></figure><h3 id="命令参数"><a href="#命令参数" class="headerlink" title="命令参数"></a>命令参数</h3><ul><li>-f: 循环读取</li><li>-q: 不现实处理信息</li><li>-v: 显示详细的处理信息</li><li>-c [number]: 显示的字节数</li><li>-n [number]: 显示的行数</li><li>-b [Number]: 从 Number 变量表示的 512 字节块位置开始读取指定文件</li><li>-r: 从文件末尾以逆序方式显示输出。-r 标志的缺省值是以逆序方式打印整个文件。如果文件大于 20,480 字节，那么 -r 标志只显示最后的 20,480 字节。-r 标志只有与 -n 标志一起时才有效。否则，就会将其忽略。而且 -r 在 -n 前</li></ul><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 显示 notes 文件的最后十行</span></div><div class="line">tail notes</div><div class="line"></div><div class="line"><span class="comment"># 要从第 200 字节开始，每次显示一页 notes 文件</span></div><div class="line">tail -c +200 notes | pg</div><div class="line"></div><div class="line"><span class="comment"># 跟踪文件变化，显示的是accounts最后十行，并持续监听</span></div><div class="line">tail -f accounts</div></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;用途:从指定点开始将文件写到标准输出。使用tail命令的-f选项可以方便的查阅正在改变的日志文件，tail -f filename会把filename里最尾部的内容显示在屏幕上，并且不但刷新，使你看到最新的文件内容。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;tail 命令从
+      
+    
+    </summary>
+    
+      <category term="shell" scheme="https://newming.github.io/categories/shell/"/>
+    
+    
+      <category term="shell" scheme="https://newming.github.io/tags/shell/"/>
+    
+  </entry>
   
   <entry>
     <title>dom 知识汇总</title>
@@ -184,7 +211,7 @@
     <link href="https://newming.github.io/2017/09/07/introduce/"/>
     <id>https://newming.github.io/2017/09/07/introduce/</id>
     <published>2017-09-07T04:59:46.000Z</published>
-    <updated>2017-11-03T02:22:08.440Z</updated>
+    <updated>2017-12-27T03:08:12.711Z</updated>
     
     <content type="html"><![CDATA[<p>关于本博客介绍</p><p>额，目前定位为自己的一个写笔记的地方，不知道将来写不写。</p>]]></content>
     
@@ -201,8 +228,6 @@
     
       <category term="文章" scheme="https://newming.github.io/categories/%E6%96%87%E7%AB%A0/"/>
     
-    
-      <category term="介绍" scheme="https://newming.github.io/tags/%E4%BB%8B%E7%BB%8D/"/>
     
   </entry>
   

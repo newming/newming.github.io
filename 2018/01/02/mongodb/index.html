@@ -1,0 +1,293 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="Newming 的个人博客笔记文档，Newming 的前端笔记，Newming 的前端博客文章"><title>mongodb 数据库 | 前端资源部</title><link rel="stylesheet" type="text/css" href="//fonts.css.network/css?family=Source+Code+Pro"><link rel="stylesheet" type="text/css" href="/css/style.css?v=2.0.1"><link rel="stylesheet" type="text/css" href="/css/highlight.css?v=2.0.1"><link rel="Shortcut Icon" href="/favicon.ico"><link rel="bookmark" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?ad4570b1386e79a9e6a7ec30f923e06d";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();</script></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">mongodb 数据库</h1><a id="logo" href="/.">前端资源部</a><p class="description">Newming 的前端笔记</p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div><div id="search-form"><div id="result-mask" class="hide"></div><label><input id="search-key" type="text" autocomplete="off" placeholder="Arama"></label><div id="result-wrap" class="hide"><div id="search-result"></div></div><div class="hide"><template id="search-tpl"><div class="item"><a href="/{path}" title="{title}"><div class="title">{title}</div><div class="time">{date}</div><div class="tags">{tags}</div></a></div></template></div></div></div><div id="layout" class="layout-g"><div class="layout-l"><div class="content_container"><div class="post"><h1 class="post-title">mongodb 数据库</h1><div class="post-meta"><a href="/2018/01/02/mongodb/#comments" class="comment-count"><i id="changyan_count_unit" data-xid="2018/01/02/mongodb/"></i>留言,<i id="changyan_parti_unit" data-xid="2018/01/02/mongodb/"></i>参与</a><p><span class="date">Jan 02, 2018</span><span><a href="/categories/数据库/" class="category">数据库</a></span><span><i id="busuanzi_container_page_pv"><i id="busuanzi_value_page_pv"></i><i>点击</i></i></span></p></div><div class="post-content"><p>在搞 node 后台开发过程中，肯定涉及到数据库的使用，其中个人使用最多就是 <code>mongodb</code> 数据库了。本文主要介绍 <code>mongodb</code> 的一些基本概念及使用。</p>
+<h2 id="1-什么是MongoDB"><a href="#1-什么是MongoDB" class="headerlink" title="1. 什么是MongoDB"></a>1. 什么是MongoDB</h2><ul>
+<li>MongoDB是一个基于分布式文件存储的开源数据库系统</li>
+<li>MongoDB 将数据存储为一个文档，数据结构由键值(key=&gt;value)对组成。MongoDB 文档类似于 JSON 对象。字段值可以包含其他文档，数组及文档数组。</li>
+</ul>
+<h2 id="2-MongoDB安装"><a href="#2-MongoDB安装" class="headerlink" title="2. MongoDB安装"></a>2. MongoDB安装</h2><h3 id="2-1-windows安装"><a href="#2-1-windows安装" class="headerlink" title="2.1 windows安装"></a>2.1 windows安装</h3><p><a href="https://docs.mongodb.org/v3.0/tutorial" target="_blank" rel="external">Windows官方安装指南</a></p>
+<h3 id="2-2-mac安装"><a href="#2-2-mac安装" class="headerlink" title="2.2 mac安装"></a>2.2 mac安装</h3><p><a href="https://docs.mongodb.com/manual/tutorial/install-mongodb-on-os-x/" target="_blank" rel="external">Mac官方安装指南</a></p>
+<ol>
+<li><p>先安装homebrew</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://brew.sh/</div></pre></td></tr></table></figure>
+</li>
+<li><p>使用brew安装mongodb</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew install mongodb</div></pre></td></tr></table></figure>
+</li>
+<li><p>再安装可视化工具<br><a href="https://robomongo.org/" target="_blank" rel="external">Robomongo</a></p>
+</li>
+</ol>
+<h2 id="3-mongodb启动与连接"><a href="#3-mongodb启动与连接" class="headerlink" title="3. mongodb启动与连接"></a>3. mongodb启动与连接</h2><h3 id="3-1-windows启动服务器端"><a href="#3-1-windows启动服务器端" class="headerlink" title="3.1 windows启动服务器端"></a>3.1 windows启动服务器端</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mongod --dbpath=./data</div></pre></td></tr></table></figure>
+<ul>
+<li>如果出现<code>waiting for connections on port 27017</code>就表示<strong>启动成功</strong>,已经在27017端口上监听了客户端的请求</li>
+<li>注意：<code>--dbpath</code>后的值表示数据库文件的存储路径,而且后面的路径必须事先创建好，必须已经<strong>存在</strong>，否则服务开启失败</li>
+<li>注意：这个命令窗体绝对<strong>不能关</strong>,关闭这个窗口就相当于停止了<code>mongodb</code>服务</li>
+<li>也可以在命令后面加上参数 <code>--port 27017</code> 来指定端口</li>
+</ul>
+<h3 id="3-2-启动客户端连接服务器"><a href="#3-2-启动客户端连接服务器" class="headerlink" title="3.2 启动客户端连接服务器"></a>3.2 启动客户端连接服务器</h3><p>命令窗体中输入 mongo –host=127.0.0.1 或者 mongo 按回车键</p>
+<blockquote>
+<p>备注：–host后的值表示服务器的ip地址</p>
+</blockquote>
+<h2 id="4-MongoDB基本概念"><a href="#4-MongoDB基本概念" class="headerlink" title="4. MongoDB基本概念"></a>4. MongoDB基本概念</h2><ul>
+<li><strong>数据库</strong> MongoDB的单个实例可以容纳<strong>多个</strong>独立的数据库，比如一个学生管理系统就可以对应一个数据库实例</li>
+<li><strong>集合</strong> 数据库是由集合组成的,一个集合用来表示一个<strong>实体</strong>,如学生集合</li>
+<li><strong>文档</strong> 集合是由文档组成的，一个文档表示一条<strong>记录</strong>,比如一位同学张三就是一个文档</li>
+</ul>
+<p><img src="http://7xjf2l.com1.z0.glb.clouddn.com/mongodbstructure.jpg"><br><img src="http://7xjf2l.com1.z0.glb.clouddn.com/mongovue.png"></p>
+<h2 id="5-数据库操作"><a href="#5-数据库操作" class="headerlink" title="5. 数据库操作"></a>5. 数据库操作</h2><h3 id="5-1-使用数据库"><a href="#5-1-使用数据库" class="headerlink" title="5.1 使用数据库"></a>5.1 使用数据库</h3><p><strong>语法</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">use database_name      database_name代表数据库的名字</div></pre></td></tr></table></figure></p>
+<p>注：如果此数据库存在，则切换到此数据库下,如果此数据库还不存在也可以切过来</p>
+<p><strong>实例</strong><br>切换到 <code>person</code>数据库下<br><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/3.mongodb-8.png"></p>
+<h3 id="5-2-查看所有数据库"><a href="#5-2-查看所有数据库" class="headerlink" title="5.2 查看所有数据库"></a>5.2 查看所有数据库</h3><p><strong>语法</strong><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">show dbs</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>备注: 我们刚创建的数据库person 如果不在列表内， 要显示它，我们需要向 person 数据库插入一些数据 db.person.insert({name:”zhangSan”,age:30})</p>
+</blockquote>
+<p><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/3.mongodb-7.png"></p>
+<h3 id="5-3-查看当前使用的数据库"><a href="#5-3-查看当前使用的数据库" class="headerlink" title="5.3 查看当前使用的数据库"></a>5.3 查看当前使用的数据库</h3><p><strong>语法</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db 或 db.getName()</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>注：db代表的是当前数据库 也就是person这个数据库</p>
+</blockquote>
+<p><strong>实例</strong></p>
+<p><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/3.mongodb-9.png"></p>
+<h3 id="5-4-删除数据库"><a href="#5-4-删除数据库" class="headerlink" title="5.4 删除数据库"></a>5.4 删除数据库</h3><p><strong>语法</strong><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.dropDatabase()</div></pre></td></tr></table></figure></p>
+<p><strong>实例</strong></p>
+<p><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/mongodb-shanChuShuJuKu-1.png"></p>
+<h2 id="6-集合操作"><a href="#6-集合操作" class="headerlink" title="6. 集合操作"></a>6. 集合操作</h2><h3 id="6-1-查看帮助"><a href="#6-1-查看帮助" class="headerlink" title="6.1 查看帮助"></a>6.1 查看帮助</h3><p><strong>语法</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.worker.help()</div></pre></td></tr></table></figure></p>
+<p><strong>实例</strong><br><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/3.mongodb-13.png"></p>
+<h3 id="6-2-查看数据库下的集合"><a href="#6-2-查看数据库下的集合" class="headerlink" title="6.2 查看数据库下的集合"></a>6.2 查看数据库下的集合</h3><p><strong>语法</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">show collections</div></pre></td></tr></table></figure></p>
+<p><strong>实例</strong><br><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/3.mongodb-11.png"></p>
+<h3 id="6-3-创建集合"><a href="#6-3-创建集合" class="headerlink" title="6.3 创建集合"></a>6.3 创建集合</h3><p><strong>创建一个空集合</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.createCollection(collection_Name)      collection_Name集合的名称</div></pre></td></tr></table></figure></p>
+<p><strong>创建集合并插入一个文档</strong></p>
+<ul>
+<li>collection_Name集合的名称</li>
+<li>document要插入的文档</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.collection_Name.insert(document)</div></pre></td></tr></table></figure>
+<p><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/3.mongodb-14.png"></p>
+<h2 id="7-插入文档"><a href="#7-插入文档" class="headerlink" title="7. 插入文档"></a>7. 插入文档</h2><h3 id="7-1-insert"><a href="#7-1-insert" class="headerlink" title="7.1 insert"></a>7.1 insert</h3><p> <strong>语法</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">db.collection_name.insert(document)</div><div class="line">`</div></pre></td></tr></table></figure></p>
+<p> <strong>参数</strong></p>
+<ul>
+<li>collection_name 集合的名字</li>
+<li>document 插入的文档</li>
+</ul>
+<p><strong>实例</strong><br><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/3.mongodb-15.png"></p>
+<blockquote>
+<p>每当插入一条新文档的时候mongodb会自动为此文档生成一个<code>_id</code>属性,_id一定是唯一的，用来唯一标识一个文档<br> _id也可以直接指定，但如果数据库中此集合下已经有此_id的话插入会失败</p>
+</blockquote>
+<h3 id="7-2-save"><a href="#7-2-save" class="headerlink" title="7.2 save"></a>7.2 save</h3><p> <strong>语法</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.collection_name.save(document)</div></pre></td></tr></table></figure></p>
+<p><strong>参数</strong></p>
+<ul>
+<li>collection_name 集合的名字</li>
+<li>document 插入的文档</li>
+</ul>
+<blockquote>
+<p>注：如果不指定 _id 字段 save() 方法类似于 insert() 方法。如果指定 _id 字段，则会更新该 _id 的数据。</p>
+</blockquote>
+<p><strong>实例</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.person.save(&#123;name:&quot;xiaoHong&quot;,age:50&#125;)</div></pre></td></tr></table></figure></p>
+<p><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/mongodb-baoCun-1.png"><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.person.save(&#123;_id:ObjectId(&quot;562c9caf671c978b6596e825&quot;),name:&quot;xiaoHong&quot;,age:10&#125;)</div></pre></td></tr></table></figure></p>
+<p><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/mongodb-baoCun-2.png"></p>
+<h2 id="8-更新文档"><a href="#8-更新文档" class="headerlink" title="8. 更新文档"></a>8. 更新文档</h2><p><strong>语法</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">db.collection.update(</div><div class="line">   &lt;query&gt;,</div><div class="line">   &lt;updateObj&gt;,</div><div class="line">   &#123;</div><div class="line">     upsert: &lt;boolean&gt;,</div><div class="line">     multi: &lt;boolean&gt;</div><div class="line">   &#125;</div><div class="line">)</div></pre></td></tr></table></figure></p>
+<p><strong>参数说明</strong></p>
+<ul>
+<li>query  查询条件,指定要更新符合哪些条件的文档</li>
+<li>update  更新后的对象或指定一些更新的操作符<ul>
+<li>$set直接指定更新后的值</li>
+<li>$inc在原基础上累加</li>
+</ul>
+</li>
+<li>upsert  可选，这个参数的意思是，如果不存在符合条件的记录时是否插入updateObj.  默认是false,不插入。</li>
+<li>multi  可选，mongodb 默认只更新找到的第一条记录，如果这个参数为true,就更新所有符合条件的记录。</li>
+</ul>
+<p><strong>实例</strong><br>将document数据中name是liSi 的数据的name修改为liSi_update<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.worker.update(&#123;name:&apos;liSi&apos;&#125;,&#123;$set:&#123;name:&apos;liSi_update&apos;&#125;&#125;)</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>注：如果有多条name是liSi的数据只更新一条,如果想全部更新需要指定{multi:true}的参数</p>
+</blockquote>
+<p><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/3.mongodb-18.png"></p>
+<h2 id="9-文档的删除"><a href="#9-文档的删除" class="headerlink" title="9. 文档的删除"></a>9. 文档的删除</h2><p>remove方法是用来移除集合中的数据</p>
+<p><strong>语法</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">db.collection.remove(</div><div class="line">   &lt;query&gt;,</div><div class="line">   &#123;</div><div class="line">     justOne: &lt;boolean&gt;</div><div class="line">   &#125;</div><div class="line">)</div></pre></td></tr></table></figure></p>
+<p><strong>参数说明</strong></p>
+<ul>
+<li>query :（可选）删除的文档的条件。</li>
+<li>justOne : （可选）如果设为 true 或 1，则只删除匹配到的多个文档中的第一个</li>
+</ul>
+<p><strong>实例</strong><br>删除worker集合里name是fJianZhou的所有Document数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.worker.remove(&#123;name:&apos;fJianZhou&apos;&#125;)</div></pre></td></tr></table></figure></p>
+<p><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/3.mongodb-19.png"><br>删除person集合里name是xiaoHong的第一条数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.person.remove(&#123;name:&quot;xiaoHong&quot;&#125;,1)</div></pre></td></tr></table></figure></p>
+<p><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/mongodb-shanChuShuJu-1.png"></p>
+<h2 id="10-查询文档"><a href="#10-查询文档" class="headerlink" title="10. 查询文档"></a>10. 查询文档</h2><h3 id="10-1-find"><a href="#10-1-find" class="headerlink" title="10.1 find"></a>10.1 find</h3><p><strong>语法</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.collection_name.find()</div></pre></td></tr></table></figure></p>
+<p><strong>参数</strong></p>
+<ul>
+<li>collection_name 集合的名字</li>
+</ul>
+<p><strong>实例</strong><br>查询worker下所有的文档<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.worker.find()</div></pre></td></tr></table></figure></p>
+<h3 id="10-2-查询指定列"><a href="#10-2-查询指定列" class="headerlink" title="10.2 查询指定列"></a>10.2 查询指定列</h3><p><strong>语法</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.collection_name.find(&#123;queryWhere&#125;,&#123;key:1,key:1&#125;)</div></pre></td></tr></table></figure></p>
+<p><strong>参数列表</strong></p>
+<ul>
+<li>collection_name  集合的名字</li>
+<li>queryWhere 参阅查询条件操作符</li>
+<li>key 指定要返回的列</li>
+<li>1 表示要显示</li>
+</ul>
+<p><strong>实例</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.worker.find(&#123;&#125;,&#123;age:1&#125;) 查询指定列</div></pre></td></tr></table></figure></p>
+<p><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/mongodb-FindWhere-1.png"></p>
+<h3 id="10-3-findOne"><a href="#10-3-findOne" class="headerlink" title="10.3 findOne"></a>10.3 findOne</h3><p>查询匹配结果的第一条数据<br><strong>语法</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.collection_name.findOne()</div></pre></td></tr></table></figure></p>
+<p><strong>实例</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.worker.findOne()</div></pre></td></tr></table></figure></p>
+<p><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/mongodb-baoCun-3.png"></p>
+<h2 id="11-条件操作符"><a href="#11-条件操作符" class="headerlink" title="11. 条件操作符"></a>11. 条件操作符</h2><p>条件操作符用于比较两个表达式并从mongoDB集合中获取数据<br><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/mongodb-where-1.png"></p>
+<h3 id="11-1-大于操作符"><a href="#11-1-大于操作符" class="headerlink" title="11.1 大于操作符"></a>11.1 大于操作符</h3><p><strong>语法</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.collectoin_name.find(&#123;&lt;key&gt;:&#123;$gt:&lt;value&gt;&#125;&#125;)</div></pre></td></tr></table></figure></p>
+<p><strong>参数</strong></p>
+<ul>
+<li>collectoin_name  集合名称</li>
+<li>key   字段</li>
+<li>value   值</li>
+</ul>
+<p><strong>实例</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.worker.find(&#123;age:&#123;$gt:30&#125;&#125;) 查询age 大于 30的数据</div></pre></td></tr></table></figure></p>
+<p><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/3.mongodb-16-2.png"></p>
+<h3 id="11-2-大于等于操作符"><a href="#11-2-大于等于操作符" class="headerlink" title="11.2 大于等于操作符"></a>11.2 大于等于操作符</h3><p><strong>语法</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.collectoin_name.find(&#123;&lt;key&gt;:&#123;$gte:&lt;value&gt;&#125;&#125;)</div></pre></td></tr></table></figure></p>
+<p><strong>参数</strong></p>
+<ul>
+<li>collectoin_name 集合名称</li>
+<li>key  字段</li>
+<li>value  值</li>
+</ul>
+<p><strong>实例</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.worker.find(&#123;age: &#123;$gte: 30&#125;&#125;) 查询age 3大于等于30 的数据</div></pre></td></tr></table></figure></p>
+<p><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/3.mongodb-16-4.png"></p>
+<h3 id="11-3-小于操作符"><a href="#11-3-小于操作符" class="headerlink" title="11.3 小于操作符"></a>11.3 小于操作符</h3><p><strong>语法</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.collectoin_name.find( &#123;&lt;key&gt;:&#123;$lt:&lt;value&gt;&#125;&#125;)</div></pre></td></tr></table></figure></p>
+<p><strong>参数</strong></p>
+<ul>
+<li>collectoin_name集合名称</li>
+<li>key 字段</li>
+<li>value 值</li>
+</ul>
+<p><strong>实例</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.worker.find(&#123;age: &#123;$lt: 30&#125;&#125;) 查询age 小于30的数据</div></pre></td></tr></table></figure></p>
+<p><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/3.mongodb-16-3.png"></p>
+<h3 id="11-4-小于等于操作符"><a href="#11-4-小于等于操作符" class="headerlink" title="11.4 小于等于操作符"></a>11.4 小于等于操作符</h3><p><strong>语法</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.collectoin_name.find(&#123;&lt;key&gt;:&#123;$lte:&lt;value&gt;&#125;&#125;)</div></pre></td></tr></table></figure></p>
+<p><strong>参数</strong></p>
+<ul>
+<li>collectoin_name集合名词</li>
+<li>key字段</li>
+<li>value值</li>
+</ul>
+<p><strong>实例</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.worker.find(&#123;age: &#123;$lte: 30&#125;&#125;) 查询age 小于等于30的数据</div></pre></td></tr></table></figure></p>
+<p><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/3.mongodb-16-5.png"></p>
+<h3 id="11-5-同时使用-gte和-lte"><a href="#11-5-同时使用-gte和-lte" class="headerlink" title="11.5 同时使用 $gte和$lte"></a>11.5 同时使用 $gte和$lte</h3><p><strong>语法</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.collectoin_name.find(&#123;&lt;key&gt;:&#123;$gte:&lt;value&gt;&#125;,&lt;key&gt;:&#123;$lte:&lt;value&gt;&#125;&#125;)</div></pre></td></tr></table></figure></p>
+<p><strong>参数</strong></p>
+<ul>
+<li>collectoin_name 集合名称</li>
+<li>key 字段</li>
+<li>value 值</li>
+</ul>
+<p><strong>实例</strong><br>查询age 大于等于 30 并且 age 小于等于 50  的数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.worker.find(&#123;age: &#123;$gte: 30, $lte: 50&#125;&#125;)</div></pre></td></tr></table></figure></p>
+<p><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/3.mongodb-16-6.png"></p>
+<h3 id="11-6-等于"><a href="#11-6-等于" class="headerlink" title="11.6 等于"></a>11.6 等于</h3><p><strong>语法</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.collectoin_name.find(&#123;&lt;key&gt;:&lt;value&gt;,&lt;key&gt;:&lt;value&gt;&#125;)</div></pre></td></tr></table></figure></p>
+<p><strong>参数</strong></p>
+<ul>
+<li>collectoin_name集合名词</li>
+<li>key字段</li>
+<li>value值</li>
+</ul>
+<p><strong>实例</strong><br>查询age = 30的数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.worker.find(&#123;&quot;age&quot;: 30&#125;)`</div></pre></td></tr></table></figure></p>
+<p><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/3.mongodb-16-1.png"></p>
+<h3 id="11-7-使用-id进行查询"><a href="#11-7-使用-id进行查询" class="headerlink" title="11.7 使用 _id进行查询"></a>11.7 使用 _id进行查询</h3><p><strong>语法</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.collectoin_name.find(&#123;&quot;_id&quot; : ObjectId(&quot;value&quot;)&#125;)</div></pre></td></tr></table></figure></p>
+<p><strong>参数</strong></p>
+<ul>
+<li>value  <code>_id</code>的值</li>
+</ul>
+<p><strong>实例</strong><br>查询_id是 562af23062d5a57609133974 数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.worker.find(&#123;&quot;_id&quot; : ObjectId(&quot;562af23062d5a57609133974&quot;)&#125;)</div></pre></td></tr></table></figure></p>
+<p><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/3.mongodb-16-9.png"></p>
+<h3 id="11-8-查询结果集的条数"><a href="#11-8-查询结果集的条数" class="headerlink" title="11.8 查询结果集的条数"></a>11.8 查询结果集的条数</h3><p><strong>语法</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.collectoin_name.find().count()</div></pre></td></tr></table></figure></p>
+<p><strong>参数</strong></p>
+<ul>
+<li>collectoin_name 集合名称</li>
+</ul>
+<p><strong>实例</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.worker.find().count()</div></pre></td></tr></table></figure></p>
+<p><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/3.mongodb-16-17.png"></p>
+<h3 id="11-9-正则匹配"><a href="#11-9-正则匹配" class="headerlink" title="11.9 正则匹配"></a>11.9 正则匹配</h3><p><strong>语法</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.collection.find(&#123;key:/value/&#125;)</div></pre></td></tr></table></figure></p>
+<p><strong>参数</strong></p>
+<ul>
+<li>collectoin_name 集合名称</li>
+<li>key 字段</li>
+<li>value 值</li>
+</ul>
+<p><strong>实例</strong><br>查询name里包含zhang的数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.worker.find(&#123;name:/value/&#125;)</div></pre></td></tr></table></figure></p>
+<p><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/3.mongodb-16-10.png"></p>
+<p>查询某个字段的值当中是否以另一个值开头<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.worker.find(&#123;name:/^zhang/&#125;)</div></pre></td></tr></table></figure></p>
+<p><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/3.mongodb-16-11.png"></p>
+<h2 id="12-与和或"><a href="#12-与和或" class="headerlink" title="12. 与和或"></a>12. 与和或</h2><h3 id="12-1-and"><a href="#12-1-and" class="headerlink" title="12.1 and"></a>12.1 and</h3><p>find方法可以传入多个键(key)，每个键(key)以逗号隔开</p>
+<p><strong>语法</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.collection_name.find(&#123;key1:value1, key2:value2&#125;)</div></pre></td></tr></table></figure></p>
+<p><strong>实例</strong><br>查询name是zhangRenYang并且age是30的数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.worker.find(&#123;name:&apos;zhangRenYang&apos;,age:30&#125;)</div></pre></td></tr></table></figure></p>
+<p><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/mongodb-andfind-1.png"></p>
+<h3 id="12-2-or"><a href="#12-2-or" class="headerlink" title="12.2 or"></a>12.2 or</h3><p><strong>语法</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">db.collection_name.find(</div><div class="line">   &#123;</div><div class="line">      $or: [</div><div class="line">         &#123;key1: value1&#125;, &#123;key2:value2&#125;</div><div class="line">      ]</div><div class="line">   &#125;</div><div class="line">)</div></pre></td></tr></table></figure></p>
+<p><strong>实例</strong><br>查询age = 30 或者 age = 50  的数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.worker.find(&#123;$or:[&#123;age = 30&#125;,&#123;age = 50&#125;]&#125;)</div></pre></td></tr></table></figure></p>
+<p><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/3.mongodb-16-8.png"></p>
+<h3 id="12-3-and和or联用"><a href="#12-3-and和or联用" class="headerlink" title="12.3 and和or联用"></a>12.3 and和or联用</h3><p><strong>语法</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">db.collection_name.find(</div><div class="line">   &#123;</div><div class="line">     key1:value1,</div><div class="line">     key2:value2,</div><div class="line">     $or: [</div><div class="line">         &#123;key1: value1&#125;,</div><div class="line">         &#123;key2:value2&#125;</div><div class="line">     ]</div><div class="line">   &#125;</div><div class="line">)</div></pre></td></tr></table></figure></p>
+<p><strong>实例</strong><br>查询 name是zhangRenYang 并且 age是30 或者 age是 50 的数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.worker.find(&#123;name:&apos;zhangRenYang&apos;,$or:[&#123;age:30&#125;,&#123;age:50&#125;]&#125;)</div></pre></td></tr></table></figure></p>
+<p><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/mongodb-andOr-1.png"></p>
+<h2 id="13-分页查询"><a href="#13-分页查询" class="headerlink" title="13. 分页查询"></a>13. 分页查询</h2><h3 id="13-1-limit"><a href="#13-1-limit" class="headerlink" title="13.1 limit"></a>13.1 limit</h3><p>读取指定数量的数据记录<br><strong>语法</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.collectoin_name.find().limit(number)</div></pre></td></tr></table></figure></p>
+<p><strong> 参数</strong></p>
+<ul>
+<li>collectoin_name集合</li>
+<li>number读取的条数</li>
+</ul>
+<p><strong>实例</strong><br>查询前3条数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.worker.find().limit(3)</div></pre></td></tr></table></figure></p>
+<p><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/3.mongodb-16-14.png"></p>
+<h3 id="13-2-skip"><a href="#13-2-skip" class="headerlink" title="13.2 skip"></a>13.2 skip</h3><p>跳过指定数量的数据，skip方法同样接受一个数字参数作为跳过的记录条数<br><strong>语法</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.collectoin_name.find().skip(number)</div></pre></td></tr></table></figure></p>
+<p><strong>参数</strong></p>
+<ul>
+<li>collectoin_name集合</li>
+<li>number跳过的条数</li>
+</ul>
+<p><strong>实例</strong><br>查询3条以后的数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.worker.find().skip(3)</div></pre></td></tr></table></figure></p>
+<p><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/3.mongodb-16-15.png"></p>
+<h3 id="13-3-skip-limit"><a href="#13-3-skip-limit" class="headerlink" title="13.3 skip+limit"></a>13.3 skip+limit</h3><p>通常用这种方式来实现分页功能<br><strong>语法</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.collectoin_name.find().skip(skipNum).limit(limitNum)</div></pre></td></tr></table></figure></p>
+<p><strong>参数</strong></p>
+<ul>
+<li>collectoin_name 集合名称</li>
+<li>skipNum 跳过的条数</li>
+<li>limitNum 限制返回的条数</li>
+</ul>
+<p><strong>实例</strong><br>查询在4-6之间的数据<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.worker.find().sort(&#123;age:-1&#125;)</div></pre></td></tr></table></figure></p>
+<p><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/3.mongodb-16-16.png"></p>
+<h3 id="13-4-sort排序"><a href="#13-4-sort排序" class="headerlink" title="13.4 sort排序"></a>13.4 sort排序</h3><p>sort()方法可以通过参数指定排序的字段，并使用 1 和 -1 来指定排序的方式，其中 1 为升序排列，而-1是用于降序排列。<br><strong>语法</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">db.collectoin_name.find().sort(&#123;key:1&#125;)</div><div class="line">db.collectoin_name.find().sort(&#123;key:-1&#125;)</div></pre></td></tr></table></figure></p>
+<p><strong>参数</strong></p>
+<ul>
+<li>collectoin_name集合</li>
+<li>key表示字段</li>
+</ul>
+<p><strong>实例</strong><br>查询出并升序排序 {age:1}  age表示按那个字段排序 1表示升序<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.worker.find().sort(&#123;age:1&#125;)</div></pre></td></tr></table></figure></p>
+<p><img src="http://7xjf2l.com2.z0.glb.qiniucdn.com/3.mongodb-16-12.png"></p>
+</div><div class="tags"><a href="/tags/mongodb/">mongodb</a></div><div class="post-share"><div class="bdsharebuttonbox"><span style="float:left;line-height: 28px;height: 28px;font-size:16px;font-weight:blod">分享到：</span><a href="#" data-cmd="more" class="bds_more"></a><a href="#" data-cmd="mshare" title="分享到一键分享" class="bds_mshare"></a><a href="#" data-cmd="fbook" title="分享到Facebook" class="bds_fbook"></a><a href="#" data-cmd="twi" title="分享到Twitter" class="bds_twi"></a><a href="#" data-cmd="linkedin" title="分享到linkedin" class="bds_linkedin"></a><a href="#" data-cmd="youdao" title="分享到有道云笔记" class="bds_youdao"></a><a href="#" data-cmd="evernotecn" title="分享到印象笔记" class="bds_evernotecn"></a><a href="#" data-cmd="weixin" title="分享到微信" class="bds_weixin"></a><a href="#" data-cmd="qzone" title="分享到QQ空间" class="bds_qzone"></a><a href="#" data-cmd="tsina" title="分享到新浪微博" class="bds_tsina"></a></div></div><div class="post-nav"><a href="/2017/12/27/tail/" class="next">tail 命令</a></div><div id="comments"><div id="SOHUCS" sid="2018/01/02/mongodb/"></div></div></div></div></div><div class="layout-r"><div id="sidebar"><div class="search-pla"></div><div id="toc" class="widget"><div class="widget-title"><i class="fa fa-fei">文章目录</i></div><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-什么是MongoDB"><span class="toc-text">1. 什么是MongoDB</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-MongoDB安装"><span class="toc-text">2. MongoDB安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-windows安装"><span class="toc-text">2.1 windows安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-mac安装"><span class="toc-text">2.2 mac安装</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-mongodb启动与连接"><span class="toc-text">3. mongodb启动与连接</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-windows启动服务器端"><span class="toc-text">3.1 windows启动服务器端</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-启动客户端连接服务器"><span class="toc-text">3.2 启动客户端连接服务器</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-MongoDB基本概念"><span class="toc-text">4. MongoDB基本概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-数据库操作"><span class="toc-text">5. 数据库操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-使用数据库"><span class="toc-text">5.1 使用数据库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-查看所有数据库"><span class="toc-text">5.2 查看所有数据库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-查看当前使用的数据库"><span class="toc-text">5.3 查看当前使用的数据库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-4-删除数据库"><span class="toc-text">5.4 删除数据库</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-集合操作"><span class="toc-text">6. 集合操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-查看帮助"><span class="toc-text">6.1 查看帮助</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-查看数据库下的集合"><span class="toc-text">6.2 查看数据库下的集合</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-创建集合"><span class="toc-text">6.3 创建集合</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-插入文档"><span class="toc-text">7. 插入文档</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-insert"><span class="toc-text">7.1 insert</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-save"><span class="toc-text">7.2 save</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-更新文档"><span class="toc-text">8. 更新文档</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-文档的删除"><span class="toc-text">9. 文档的删除</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-查询文档"><span class="toc-text">10. 查询文档</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#10-1-find"><span class="toc-text">10.1 find</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-2-查询指定列"><span class="toc-text">10.2 查询指定列</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-3-findOne"><span class="toc-text">10.3 findOne</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-条件操作符"><span class="toc-text">11. 条件操作符</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#11-1-大于操作符"><span class="toc-text">11.1 大于操作符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-2-大于等于操作符"><span class="toc-text">11.2 大于等于操作符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-3-小于操作符"><span class="toc-text">11.3 小于操作符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-4-小于等于操作符"><span class="toc-text">11.4 小于等于操作符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-5-同时使用-gte和-lte"><span class="toc-text">11.5 同时使用 $gte和$lte</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-6-等于"><span class="toc-text">11.6 等于</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-7-使用-id进行查询"><span class="toc-text">11.7 使用 _id进行查询</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-8-查询结果集的条数"><span class="toc-text">11.8 查询结果集的条数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-9-正则匹配"><span class="toc-text">11.9 正则匹配</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-与和或"><span class="toc-text">12. 与和或</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#12-1-and"><span class="toc-text">12.1 and</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-2-or"><span class="toc-text">12.2 or</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-3-and和or联用"><span class="toc-text">12.3 and和or联用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-分页查询"><span class="toc-text">13. 分页查询</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#13-1-limit"><span class="toc-text">13.1 limit</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-2-skip"><span class="toc-text">13.2 skip</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-3-skip-limit"><span class="toc-text">13.3 skip+limit</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-4-sort排序"><span class="toc-text">13.4 sort排序</span></a></li></ol></li></ol></div><div class="widget"><div class="widget-title"><i class="fa fa-xie"> 最新文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/01/02/mongodb/">mongodb 数据库</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/27/tail/">tail 命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/26/dom-model/">dom 知识汇总</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/23/enable-mysite-https/">网站升级 HTTPS</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/19/position-sticky/">position-sticky</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/15/custom-range-style/">自定义 range input 样式</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/11/03/words-for-it/">IT 必备词汇</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/09/21/arrsort/">数组排序算法</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/09/07/introduce/">introduce</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-gui"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/前端/">前端</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/文章/">文章</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网站/">网站</a><span class="category-list-count">1</span></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-biao"> 标签</i></div><div class="tagcloud"><a href="/tags/js/" style="font-size: 15px;">js</a> <a href="/tags/css/" style="font-size: 15px;">css</a> <a href="/tags/mongodb/" style="font-size: 15px;">mongodb</a> <a href="/tags/nginx/" style="font-size: 15px;">nginx</a> <a href="/tags/shell/" style="font-size: 15px;">shell</a> <a href="/tags/English/" style="font-size: 15px;">English</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-archive"> 归档</i></div><ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-you"> 友情链接</i></div><ul></ul><a href="http://www.newming.cn/" title="个人网站" target="_blank">个人网站</a><ul></ul><a href="https://github.com/newming" title="github" target="_blank">github</a><ul></ul><a href="https://coding.net/user" title="coding" target="_blank">coding</a></div></div></div></div><a id="totop" href="#top"></a><div id="footer"><div class="footer-info"><p><a href="/baidusitemap.xml">Baidu Site Haritası</a> |  <a href="/atom.xml">订阅</a> |  <a href="/about/">关于</a></p><p>本站总访问量：<i id="busuanzi_container_site_pv"><i id="busuanzi_value_site_pv"></i></i>次</p><p><span> Copyright &copy;<a href="/." rel="nofollow">Newming.</a></span><span> Theme by<a rel="nofollow" target="_blank" href="https://github.com/chaooo/hexo-theme-BlueLake"> BlueLake.</a></span><span> Count by<a href="http://busuanzi.ibruce.info/"> busuanzi.</a></span><span> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a></span></p></div></div></div><script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js" async></script><script type="text/javascript" src="/js/search.json.js?v=2.0.1"></script><script type="text/javascript" src="/js/toctotop.js?v=2.0.1" async></script><script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["mshare","weixin","tsina","qzone","linkedin","fbook","twi","print","renren","sqq","evernotecn","bdysc","tqq","tqf","bdxc","kaixin001","tieba","douban","bdhome","thx","ibaidu","meilishuo","mogujie","diandian","huaban","duitang","hx","fx","youdao","sdo","qingbiji","people","xinhua","mail","isohu","yaolan","wealink","ty","iguba","h163","copy"],"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["tsina","qzone","weixin","fbook","twi","linkedin","youdao","evernotecn","mshare"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["tsina","qzone","weixin","fbook","twi","linkedin","youdao","evernotecn","mshare"]}};with(document)0[(getElementsByTagName('head')[0]||head).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script><script>window._config = { showScore: true };
+(function(){ 
+  var appid = 'cytd93gvc'; 
+  var conf = '0cc7cd8ba422165ead18a54d72a4ea07'; 
+  var width = window.innerWidth || document.documentElement.clientWidth; 
+  var nodes =document.getElementsByTagName("head")[0]||document.head||document.documentElement;
+  if (/(Android|iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent) && width < 750) {  
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
+  }
+  else { 
+    var loadJs=function(d,a){
+      var b=document.createElement("script");b.setAttribute("type","text/javascript");
+      b.setAttribute("charset","UTF-8");
+      b.setAttribute("src",d);
+      if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}
+      nodes.appendChild(b)
+    };
+    loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})}); 
+  } 
+  var loadCss = function(cssString){  
+    var style=document.createElement("style");  
+    style.setAttribute("type", "text/css");  
+    if(style.styleSheet){// IE  
+        style.styleSheet.cssText = cssString;  
+    } else {// w3c  
+        var cssText = document.createTextNode(cssString);  
+        style.appendChild(cssText);  
+    }
+    nodes.appendChild(style);
+  }
+  window.onload=function(){loadCss('.module-hot-topic,.module-cmt-float-bar{display:none!important}#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w .wrap-action-w .cbox-prompt-w span.prompt-empty-w,#SOHUCS #SOHU_MAIN .module-cmt-float-bar .wrap-cont-w .cont-form-w .form-text-w span.text-null,#SOHUCS #SOHU_MAIN .module-cmt-float-bar .wrap-cont-w .cont-minwidth-w div.cont-comment-w a.comment-link-w,#SOHUCS #SOHU_MAIN .module-cmt-float-bar .wrap-cont-w .cont-minwidth-w div.cont-comment-w span.comment-text-w,#SOHUCS #SOHU_MAIN .module-cmt-footer .section-service-w div.service-wrap-w a:hover,#SOHUCS #SOHU_MAIN .module-cmt-header .section-cbox-w .block-head-w div.header-login,#SOHUCS #SOHU_MAIN .module-cmt-header .section-title-w .title-user-w .user-wrap-w span.wrap-name-w,#SOHUCS #SOHU_MAIN .module-cmt-list .action-click-gw span.click-disable-eg a em.icon-name-bg,#SOHUCS #SOHU_MAIN .module-cmt-list .block-title-gw ul li div.title-name-gw,#SOHUCS #SOHU_MAIN .module-cmt-list .cmt-list-type .cmt-list-number .comment-number span.cy-number,#SOHUCS #SOHU_MAIN .module-cmt-list .cmt-list-type .cmt-list-number span.comment-number,#SOHUCS #SOHU_MAIN .module-cmt-list .cmt-list-type .type-lists li.active,#SOHUCS #SOHU_MAIN .module-cmt-list .msg-wrap-gw .wrap-action-gw .action-click-gw span a:hover,#SOHUCS #SOHU_MAIN .module-cmt-list .picture-box-gw div.box-action-gw a:hover,#SOHUCS #SOHU_MAIN .module-cmt-list .wrap-action-gw .action-click-gw span a:hover em.icon-name-bg,#SOHUCS #SOHU_MAIN .module-cmt-list .wrap-user-gw span.user-name-gw a{color:#40759b!important}#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w .post-wrap-border-t div.post-wrap-border-t-r,#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w div.post-wrap-border-l,#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w div.post-wrap-border-r{display:none!important}#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w .post-wrap-border-t div.post-wrap-border-t-l{background:#FFF!important;top:-2px!important}#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w .wrap-action-w .action-function-w .uploading-wrapper-dw div.wrapper-image-dw,#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w div.post-wrap-main,#SOHUCS #SOHU_MAIN .module-cmt-float-bar .wrap-cont-w .cont-form-w div.form-text-w,#SOHUCS #SOHU_MAIN .module-cmt-header .section-cbox-w .block-head-w div.header-login,#SOHUCS #SOHU_MAIN .module-cmt-list .module-cmt-box .post-wrap-w div.post-wrap-main{border:1px solid #e6e6e6!important;border-radius:20px 20px 20px 20px;margin:0!important}#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w .wrap-action-w .action-issue-w .issue-btn-w a .btn-fw{width:130px!important;height:34px!important;line-height:33px!important;font-size:17px!important;background:#5483b1!important;border-radius:20px!important;color:#FFF!important;-webkit-box-shadow:0 -1px 4px #5483b1 inset;box-shadow:0 -1px 10px #5483b1 inset}#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w .wrap-action-w .action-issue-w .issue-btn-w a .btn-fw:before{content:"发表评论"}#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w .wrap-action-w .action-issue-w .issue-btn-w a:hover .btn-fw{color:#40759b!important;background:#FFF!important}#SOHUCS #SOHU_MAIN .module-cmt-list .cmt-list-type .type-lists li{background:none!important;border-bottom:1px solid #e6e6e6}#SOHUCS #SOHU_MAIN .module-cmt-list .cmt-list-type .type-lists li.active{border:1px solid #e6e6e6;border-radius:10px 10px 0 0;border-bottom:none}#SOHUCS #SOHU_MAIN .module-cmt-list .block-title-gw ul li .title-name-gw div.title-name-gw-tag{background:#5483b1!important;border-radius:3px}#SOHUCS #SOHU_MAIN .module-cmt-list .cmt-list-type div.cmt-list-border{background-color:#e6e6e6!important}#SOHUCS #SOHU_MAIN .module-cmt-notice ul.nt-list li.nt-item{border:1px solid #e6e6e6!important}#SOHUCS #SOHU_MAIN .module-cmt-notice ul.nt-list li.nt-item .nt-logo{text-align:center;line-height:40px;border-radius:50%!important;background:#e6e6e6!important}#SOHUCS #SOHU_MAIN .module-cmt-notice ul.nt-list li.nt-item .nt-logo:before{content:"畅";font-size:22px;color:#FFF}#SOHUCS #SOHU_MAIN .module-cmt-notice ul.nt-list li.nt-item a.nt-text,#SOHUCS #SOHU_MAIN .module-cmt-notice ul.nt-list li.nt-item a.nt-text i{color:#5483b1!important}#SOHUCS #SOHU_MAIN .module-cmt-header .section-title-w .title-user-w .user-wrap-w{background:#FFF!important}');};
+})();</script><script src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script></body></html>

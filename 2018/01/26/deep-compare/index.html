@@ -6,7 +6,253 @@
   s.parentNode.insertBefore(hm, s);
   })();</script></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">deep-compare</h1><a id="logo" href="/.">前端资源部</a><p class="description">Newming 的前端笔记</p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div><div id="search-form"><div id="result-mask" class="hide"></div><label><input id="search-key" type="text" autocomplete="off" placeholder="Newming"></label><div id="result-wrap" class="hide"><div id="search-result"></div></div><div class="hide"><template id="search-tpl"><div class="item"><a href="/{path}" title="{title}"><div class="title">{title}</div><div class="time">{date}</div><div class="tags">{tags}</div></a></div></template></div></div></div><div id="layout" class="layout-g"><div class="layout-l"><div class="content_container"><div class="post"><h1 class="post-title">deep-compare</h1><div class="post-meta"><a href="/2018/01/26/deep-compare/#comments" class="comment-count"><i id="changyan_count_unit" data-xid="2018/01/26/deep-compare/"></i>留言,<i id="changyan_parti_unit" data-xid="2018/01/26/deep-compare/"></i>参与</a><p><span class="date">Jan 26, 2018</span><span><a href="/categories/前端/" class="category">前端</a></span><span><i id="busuanzi_container_page_pv"><i id="busuanzi_value_page_pv"></i><i>点击</i></i></span></p></div><div class="post-content"><p>今天分享的是一个可以进行深度比较传入参数的方法。在日常的开发中，比较两个数据是否相等的情况非常多，对于基本数据类型的相对简单。但是当比较两个对象的时候就比较复杂了。下面分享一个在 <a href="https://stackoverflow.com/questions/1068834/object-comparison-in-javascript" target="_blank" rel="external">stackoverflow</a> 上看到的方法，可以比较传入的多个参数是否相等。</p>
 <p>在阅读代码时加入了自己的一些注释，同时理了一下对比两个不知道数据类型的变量时，该如何去做。具体涉及到鉴别时各种条件的优先顺序以及需要注意的点。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">deepCompare</span> (<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> i, l, leftChain, rightChain;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">function</span> <span class="title">compare2Objects</span> (<span class="params">x, y</span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> p;</div><div class="line"></div><div class="line">    <span class="comment">// remember that NaN === NaN returns false</span></div><div class="line">    <span class="comment">// and isNaN(undefined) returns true</span></div><div class="line">    <span class="comment">// 第一步如果两个是 NaN 返回 true。要注意如何识别 NaN，即上边的两条注释</span></div><div class="line">    <span class="keyword">if</span> (<span class="built_in">isNaN</span>(x) &amp;&amp; <span class="built_in">isNaN</span>(y) &amp;&amp; <span class="keyword">typeof</span> x === <span class="string">'number'</span> &amp;&amp; <span class="keyword">typeof</span> y === <span class="string">'number'</span>) &#123;</div><div class="line">         <span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// Compare primitives and functions.</span></div><div class="line">    <span class="comment">// Check if both arguments link to the same object.</span></div><div class="line">    <span class="comment">// Especially useful on the step where we compare prototypes</span></div><div class="line">    <span class="comment">// 第二步直接判断是否相等</span></div><div class="line">    <span class="keyword">if</span> (x === y) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// Works in case when functions are created in constructor.</span></div><div class="line">    <span class="comment">// Comparing dates is a common scenario. Another built-ins?</span></div><div class="line">    <span class="comment">// We can even handle functions passed across iframes</span></div><div class="line">    <span class="comment">// 第三步，如果是函数或者是通过 new 出来的 String，它们的类型为 object ，调用他们的 toString 来检测</span></div><div class="line">    <span class="keyword">if</span> ((<span class="keyword">typeof</span> x === <span class="string">'function'</span> &amp;&amp; <span class="keyword">typeof</span> y === <span class="string">'function'</span>) ||</div><div class="line">       (x <span class="keyword">instanceof</span> <span class="built_in">Date</span> &amp;&amp; y <span class="keyword">instanceof</span> <span class="built_in">Date</span>) ||</div><div class="line">       (x <span class="keyword">instanceof</span> <span class="built_in">RegExp</span> &amp;&amp; y <span class="keyword">instanceof</span> <span class="built_in">RegExp</span>) ||</div><div class="line">       (x <span class="keyword">instanceof</span> <span class="built_in">String</span> &amp;&amp; y <span class="keyword">instanceof</span> <span class="built_in">String</span>) ||</div><div class="line">       (x <span class="keyword">instanceof</span> <span class="built_in">Number</span> &amp;&amp; y <span class="keyword">instanceof</span> <span class="built_in">Number</span>)) &#123;</div><div class="line">        <span class="keyword">return</span> x.toString() === y.toString();</div><div class="line">    &#125;</div><div class="line">    <span class="comment">// 第四步，到这里只剩下对象（包括&#123;&#125;, []，注意不包含 null，因为 null === null 为 true）没有判断出来</span></div><div class="line">    <span class="comment">// At last checking prototypes as good as we can</span></div><div class="line">    <span class="keyword">if</span> (!(x <span class="keyword">instanceof</span> <span class="built_in">Object</span> &amp;&amp; y <span class="keyword">instanceof</span> <span class="built_in">Object</span>)) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">/*</span></div><div class="line"><span class="comment">        var a = function fun () &#123;&#125;</span></div><div class="line"><span class="comment">        var b = new a</span></div><div class="line"><span class="comment">        a.prototype.isPrototypeOf(b) // true</span></div><div class="line"><span class="comment">    */</span></div><div class="line">    <span class="keyword">if</span> (x.isPrototypeOf(y) || y.isPrototypeOf(x)) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (x.constructor !== y.constructor) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (x.prototype !== y.prototype) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// Check for infinitive linking loops</span></div><div class="line">    <span class="keyword">if</span> (leftChain.indexOf(x) &gt; <span class="number">-1</span> || rightChain.indexOf(y) &gt; <span class="number">-1</span>) &#123;</div><div class="line">         <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// Quick checking of one object being a subset of another.</span></div><div class="line">    <span class="comment">// todo: cache the structure of arguments[0] for performance</span></div><div class="line">    <span class="comment">// 这里只是检测了两个对象(数组)拥有相同的属性，并且属性类型相同，具体属性值还没有深度对比</span></div><div class="line">    <span class="keyword">for</span> (p <span class="keyword">in</span> y) &#123;</div><div class="line">        <span class="keyword">if</span> (y.hasOwnProperty(p) !== x.hasOwnProperty(p)) &#123;</div><div class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">typeof</span> y[p] !== <span class="keyword">typeof</span> x[p]) &#123;</div><div class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">for</span> (p <span class="keyword">in</span> x) &#123;</div><div class="line">        <span class="comment">// 首先反过来来了一遍上面（61-68）循环对比，避免 x 中包含的某个属性 y 中没有，不可以删除</span></div><div class="line">        <span class="keyword">if</span> (y.hasOwnProperty(p) !== x.hasOwnProperty(p)) &#123;</div><div class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">typeof</span> y[p] !== <span class="keyword">typeof</span> x[p]) &#123;</div><div class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">switch</span> (<span class="keyword">typeof</span> (x[p])) &#123;</div><div class="line">            <span class="keyword">case</span> <span class="string">'object'</span>:</div><div class="line">            <span class="keyword">case</span> <span class="string">'function'</span>:</div><div class="line"></div><div class="line">                leftChain.push(x);</div><div class="line">                rightChain.push(y);</div><div class="line">                <span class="comment">// 递归</span></div><div class="line">                <span class="keyword">if</span> (!compare2Objects (x[p], y[p])) &#123;</div><div class="line">                    <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">                &#125;</div><div class="line"></div><div class="line">                leftChain.pop();</div><div class="line">                rightChain.pop();</div><div class="line">                <span class="keyword">break</span>;</div><div class="line"></div><div class="line">            <span class="keyword">default</span>:</div><div class="line">                <span class="keyword">if</span> (x[p] !== y[p]) &#123;</div><div class="line">                    <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">break</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (<span class="built_in">arguments</span>.length &lt; <span class="number">1</span>) &#123;</div><div class="line">    <span class="keyword">return</span> <span class="literal">true</span>; <span class="comment">//Die silently? Don't know how to handle such case, please help...</span></div><div class="line">    <span class="comment">// throw "Need two or more arguments to compare";</span></div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">for</span> (i = <span class="number">1</span>, l = <span class="built_in">arguments</span>.length; i &lt; l; i++) &#123;</div><div class="line"></div><div class="line">      leftChain = []; <span class="comment">//Todo: this can be cached</span></div><div class="line">      rightChain = [];</div><div class="line"></div><div class="line">      <span class="keyword">if</span> (!compare2Objects(<span class="built_in">arguments</span>[<span class="number">0</span>], <span class="built_in">arguments</span>[i])) &#123;</div><div class="line">          <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">      &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></div><div class="tags"><a href="/tags/js/">js</a></div><div class="post-share"><div class="bdsharebuttonbox"><span style="float:left;line-height: 28px;height: 28px;font-size:16px;font-weight:blod">分享到：</span><a href="#" data-cmd="more" class="bds_more"></a><a href="#" data-cmd="mshare" title="分享到一键分享" class="bds_mshare"></a><a href="#" data-cmd="fbook" title="分享到Facebook" class="bds_fbook"></a><a href="#" data-cmd="twi" title="分享到Twitter" class="bds_twi"></a><a href="#" data-cmd="linkedin" title="分享到linkedin" class="bds_linkedin"></a><a href="#" data-cmd="youdao" title="分享到有道云笔记" class="bds_youdao"></a><a href="#" data-cmd="evernotecn" title="分享到印象笔记" class="bds_evernotecn"></a><a href="#" data-cmd="weixin" title="分享到微信" class="bds_weixin"></a><a href="#" data-cmd="qzone" title="分享到QQ空间" class="bds_qzone"></a><a href="#" data-cmd="tsina" title="分享到新浪微博" class="bds_tsina"></a></div></div><div class="post-nav"><a href="/2018/01/02/mongoose/" class="next">mongoose 简易教程</a></div><div id="comments"><div id="SOHUCS" sid="2018/01/26/deep-compare/"></div></div></div></div></div><div class="layout-r"><div id="sidebar"><div class="search-pla"></div><div id="toc" class="widget"><div class="widget-title"><i class="fa fa-fei">文章目录</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-xie"> 最新文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/01/26/deep-compare/">deep-compare</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/02/mongoose/">mongoose 简易教程</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/02/mongodb/">mongodb 数据库</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/27/tail/">tail 命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/26/dom-model/">dom 知识汇总</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/23/enable-mysite-https/">网站升级 HTTPS</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/19/position-sticky/">position-sticky</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/15/custom-range-style/">自定义 range input 样式</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/11/03/words-for-it/">IT 必备词汇</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/09/21/arrsort/">数组排序算法</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-gui"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/前端/">前端</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/文章/">文章</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网站/">网站</a><span class="category-list-count">1</span></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-biao"> 标签</i></div><div class="tagcloud"><a href="/tags/css/" style="font-size: 15px;">css</a> <a href="/tags/js/" style="font-size: 15px;">js</a> <a href="/tags/nginx/" style="font-size: 15px;">nginx</a> <a href="/tags/mongodb/" style="font-size: 15px;">mongodb</a> <a href="/tags/shell/" style="font-size: 15px;">shell</a> <a href="/tags/English/" style="font-size: 15px;">English</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-archive"> 归档</i></div><ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-you"> 友情链接</i></div><ul></ul><a href="http://www.newming.cn/" title="个人网站" target="_blank">个人网站</a><ul></ul><a href="https://github.com/newming" title="github" target="_blank">github</a><ul></ul><a href="https://coding.net/user" title="coding" target="_blank">coding</a></div></div></div></div><a id="totop" href="#top"></a><div id="footer"><div class="footer-info"><p><a href="/baidusitemap.xml">Baidu Site Haritası</a> |  <a href="/atom.xml">订阅</a> |  <a href="/about/">关于</a></p><p>本站总访问量：<i id="busuanzi_container_site_pv"><i id="busuanzi_value_site_pv"></i></i>次</p><p><span> Copyright &copy;<a href="/." rel="nofollow">Newming.</a></span><span> Theme by<a rel="nofollow" target="_blank" href="https://github.com/chaooo/hexo-theme-BlueLake"> BlueLake.</a></span><span> Count by<a href="http://busuanzi.ibruce.info/"> busuanzi.</a></span><span> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a></span></p></div></div></div><script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js" async></script><script type="text/javascript" src="/js/search.json.js?v=2.0.1"></script><script type="text/javascript" src="/js/toctotop.js?v=2.0.1" async></script><script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["mshare","weixin","tsina","qzone","linkedin","fbook","twi","print","renren","sqq","evernotecn","bdysc","tqq","tqf","bdxc","kaixin001","tieba","douban","bdhome","thx","ibaidu","meilishuo","mogujie","diandian","huaban","duitang","hx","fx","youdao","sdo","qingbiji","people","xinhua","mail","isohu","yaolan","wealink","ty","iguba","h163","copy"],"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["tsina","qzone","weixin","fbook","twi","linkedin","youdao","evernotecn","mshare"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["tsina","qzone","weixin","fbook","twi","linkedin","youdao","evernotecn","mshare"]}};with(document)0[(getElementsByTagName('head')[0]||head).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+<span class="line">7</span>
+<span class="line">8</span>
+<span class="line">9</span>
+<span class="line">10</span>
+<span class="line">11</span>
+<span class="line">12</span>
+<span class="line">13</span>
+<span class="line">14</span>
+<span class="line">15</span>
+<span class="line">16</span>
+<span class="line">17</span>
+<span class="line">18</span>
+<span class="line">19</span>
+<span class="line">20</span>
+<span class="line">21</span>
+<span class="line">22</span>
+<span class="line">23</span>
+<span class="line">24</span>
+<span class="line">25</span>
+<span class="line">26</span>
+<span class="line">27</span>
+<span class="line">28</span>
+<span class="line">29</span>
+<span class="line">30</span>
+<span class="line">31</span>
+<span class="line">32</span>
+<span class="line">33</span>
+<span class="line">34</span>
+<span class="line">35</span>
+<span class="line">36</span>
+<span class="line">37</span>
+<span class="line">38</span>
+<span class="line">39</span>
+<span class="line">40</span>
+<span class="line">41</span>
+<span class="line">42</span>
+<span class="line">43</span>
+<span class="line">44</span>
+<span class="line">45</span>
+<span class="line">46</span>
+<span class="line">47</span>
+<span class="line">48</span>
+<span class="line">49</span>
+<span class="line">50</span>
+<span class="line">51</span>
+<span class="line">52</span>
+<span class="line">53</span>
+<span class="line">54</span>
+<span class="line">55</span>
+<span class="line">56</span>
+<span class="line">57</span>
+<span class="line">58</span>
+<span class="line">59</span>
+<span class="line">60</span>
+<span class="line">61</span>
+<span class="line">62</span>
+<span class="line">63</span>
+<span class="line">64</span>
+<span class="line">65</span>
+<span class="line">66</span>
+<span class="line">67</span>
+<span class="line">68</span>
+<span class="line">69</span>
+<span class="line">70</span>
+<span class="line">71</span>
+<span class="line">72</span>
+<span class="line">73</span>
+<span class="line">74</span>
+<span class="line">75</span>
+<span class="line">76</span>
+<span class="line">77</span>
+<span class="line">78</span>
+<span class="line">79</span>
+<span class="line">80</span>
+<span class="line">81</span>
+<span class="line">82</span>
+<span class="line">83</span>
+<span class="line">84</span>
+<span class="line">85</span>
+<span class="line">86</span>
+<span class="line">87</span>
+<span class="line">88</span>
+<span class="line">89</span>
+<span class="line">90</span>
+<span class="line">91</span>
+<span class="line">92</span>
+<span class="line">93</span>
+<span class="line">94</span>
+<span class="line">95</span>
+<span class="line">96</span>
+<span class="line">97</span>
+<span class="line">98</span>
+<span class="line">99</span>
+<span class="line">100</span>
+<span class="line">101</span>
+<span class="line">102</span>
+<span class="line">103</span>
+<span class="line">104</span>
+<span class="line">105</span>
+<span class="line">106</span>
+<span class="line">107</span>
+<span class="line">108</span>
+<span class="line">109</span>
+<span class="line">110</span>
+<span class="line">111</span>
+<span class="line">112</span>
+<span class="line">113</span>
+<span class="line">114</span>
+<span class="line">115</span>
+<span class="line">116</span>
+<span class="line">117</span>
+<span class="line">118</span>
+<span class="line">119</span>
+<span class="line">120</span>
+<span class="line">121</span>
+<span class="line">122</span>
+<span class="line">123</span>
+</pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">deepCompare</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">  <span class="keyword">var</span> i, l, leftChain, rightChain;</span>
+<span class="line"></span>
+<span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">compare2Objects</span> (<span class="params">x, y</span>) </span>&#123;</span>
+<span class="line">    <span class="keyword">var</span> p;</span>
+<span class="line"></span>
+<span class="line">    <span class="comment">// remember that NaN === NaN returns false</span></span>
+<span class="line">    <span class="comment">// and isNaN(undefined) returns true</span></span>
+<span class="line">    <span class="comment">// 第一步如果两个是 NaN 返回 true。要注意如何识别 NaN，即上边的两条注释</span></span>
+<span class="line">    <span class="keyword">if</span> (<span class="built_in">isNaN</span>(x) &amp;&amp; <span class="built_in">isNaN</span>(y) &amp;&amp; <span class="keyword">typeof</span> x === <span class="string">'number'</span> &amp;&amp; <span class="keyword">typeof</span> y === <span class="string">'number'</span>) &#123;</span>
+<span class="line">         <span class="keyword">return</span> <span class="literal">true</span>;</span>
+<span class="line">    &#125;</span>
+<span class="line"></span>
+<span class="line">    <span class="comment">// Compare primitives and functions.</span></span>
+<span class="line">    <span class="comment">// Check if both arguments link to the same object.</span></span>
+<span class="line">    <span class="comment">// Especially useful on the step where we compare prototypes</span></span>
+<span class="line">    <span class="comment">// 第二步直接判断是否相等</span></span>
+<span class="line">    <span class="keyword">if</span> (x === y) &#123;</span>
+<span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span>
+<span class="line">    &#125;</span>
+<span class="line"></span>
+<span class="line">    <span class="comment">// Works in case when functions are created in constructor.</span></span>
+<span class="line">    <span class="comment">// Comparing dates is a common scenario. Another built-ins?</span></span>
+<span class="line">    <span class="comment">// We can even handle functions passed across iframes</span></span>
+<span class="line">    <span class="comment">// 第三步，如果是函数或者是通过 new 出来的 String，它们的类型为 object ，调用他们的 toString 来检测</span></span>
+<span class="line">    <span class="keyword">if</span> ((<span class="keyword">typeof</span> x === <span class="string">'function'</span> &amp;&amp; <span class="keyword">typeof</span> y === <span class="string">'function'</span>) ||</span>
+<span class="line">       (x <span class="keyword">instanceof</span> <span class="built_in">Date</span> &amp;&amp; y <span class="keyword">instanceof</span> <span class="built_in">Date</span>) ||</span>
+<span class="line">       (x <span class="keyword">instanceof</span> <span class="built_in">RegExp</span> &amp;&amp; y <span class="keyword">instanceof</span> <span class="built_in">RegExp</span>) ||</span>
+<span class="line">       (x <span class="keyword">instanceof</span> <span class="built_in">String</span> &amp;&amp; y <span class="keyword">instanceof</span> <span class="built_in">String</span>) ||</span>
+<span class="line">       (x <span class="keyword">instanceof</span> <span class="built_in">Number</span> &amp;&amp; y <span class="keyword">instanceof</span> <span class="built_in">Number</span>)) &#123;</span>
+<span class="line">        <span class="keyword">return</span> x.toString() === y.toString();</span>
+<span class="line">    &#125;</span>
+<span class="line">    <span class="comment">// 第四步，到这里只剩下对象（包括&#123;&#125;, []，注意不包含 null，因为 null === null 为 true）没有判断出来</span></span>
+<span class="line">    <span class="comment">// At last checking prototypes as good as we can</span></span>
+<span class="line">    <span class="keyword">if</span> (!(x <span class="keyword">instanceof</span> <span class="built_in">Object</span> &amp;&amp; y <span class="keyword">instanceof</span> <span class="built_in">Object</span>)) &#123;</span>
+<span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span>
+<span class="line">    &#125;</span>
+<span class="line">    <span class="comment">/*</span></span>
+<span class="line"><span class="comment">        var a = function fun () &#123;&#125;</span></span>
+<span class="line"><span class="comment">        var b = new a</span></span>
+<span class="line"><span class="comment">        a.prototype.isPrototypeOf(b) // true</span></span>
+<span class="line"><span class="comment">    */</span></span>
+<span class="line">    <span class="keyword">if</span> (x.isPrototypeOf(y) || y.isPrototypeOf(x)) &#123;</span>
+<span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span>
+<span class="line">    &#125;</span>
+<span class="line"></span>
+<span class="line">    <span class="keyword">if</span> (x.constructor !== y.constructor) &#123;</span>
+<span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span>
+<span class="line">    &#125;</span>
+<span class="line"></span>
+<span class="line">    <span class="keyword">if</span> (x.prototype !== y.prototype) &#123;</span>
+<span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span>
+<span class="line">    &#125;</span>
+<span class="line"></span>
+<span class="line">    <span class="comment">// Check for infinitive linking loops</span></span>
+<span class="line">    <span class="keyword">if</span> (leftChain.indexOf(x) &gt; <span class="number">-1</span> || rightChain.indexOf(y) &gt; <span class="number">-1</span>) &#123;</span>
+<span class="line">         <span class="keyword">return</span> <span class="literal">false</span>;</span>
+<span class="line">    &#125;</span>
+<span class="line"></span>
+<span class="line">    <span class="comment">// Quick checking of one object being a subset of another.</span></span>
+<span class="line">    <span class="comment">// todo: cache the structure of arguments[0] for performance</span></span>
+<span class="line">    <span class="comment">// 这里只是检测了两个对象(数组)拥有相同的属性，并且属性类型相同，具体属性值还没有深度对比</span></span>
+<span class="line">    <span class="keyword">for</span> (p <span class="keyword">in</span> y) &#123;</span>
+<span class="line">        <span class="keyword">if</span> (y.hasOwnProperty(p) !== x.hasOwnProperty(p)) &#123;</span>
+<span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span>
+<span class="line">        &#125;</span>
+<span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">typeof</span> y[p] !== <span class="keyword">typeof</span> x[p]) &#123;</span>
+<span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span>
+<span class="line">        &#125;</span>
+<span class="line">    &#125;</span>
+<span class="line"></span>
+<span class="line">    <span class="keyword">for</span> (p <span class="keyword">in</span> x) &#123;</span>
+<span class="line">        <span class="comment">// 首先反过来来了一遍上面（61-68）循环对比，避免 x 中包含的某个属性 y 中没有，不可以删除</span></span>
+<span class="line">        <span class="keyword">if</span> (y.hasOwnProperty(p) !== x.hasOwnProperty(p)) &#123;</span>
+<span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span>
+<span class="line">        &#125;</span>
+<span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">typeof</span> y[p] !== <span class="keyword">typeof</span> x[p]) &#123;</span>
+<span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span>
+<span class="line">        &#125;</span>
+<span class="line"></span>
+<span class="line">        <span class="keyword">switch</span> (<span class="keyword">typeof</span> (x[p])) &#123;</span>
+<span class="line">            <span class="keyword">case</span> <span class="string">'object'</span>:</span>
+<span class="line">            <span class="keyword">case</span> <span class="string">'function'</span>:</span>
+<span class="line"></span>
+<span class="line">                leftChain.push(x);</span>
+<span class="line">                rightChain.push(y);</span>
+<span class="line">                <span class="comment">// 递归</span></span>
+<span class="line">                <span class="keyword">if</span> (!compare2Objects (x[p], y[p])) &#123;</span>
+<span class="line">                    <span class="keyword">return</span> <span class="literal">false</span>;</span>
+<span class="line">                &#125;</span>
+<span class="line"></span>
+<span class="line">                leftChain.pop();</span>
+<span class="line">                rightChain.pop();</span>
+<span class="line">                <span class="keyword">break</span>;</span>
+<span class="line"></span>
+<span class="line">            <span class="keyword">default</span>:</span>
+<span class="line">                <span class="keyword">if</span> (x[p] !== y[p]) &#123;</span>
+<span class="line">                    <span class="keyword">return</span> <span class="literal">false</span>;</span>
+<span class="line">                &#125;</span>
+<span class="line">                <span class="keyword">break</span>;</span>
+<span class="line">        &#125;</span>
+<span class="line">    &#125;</span>
+<span class="line"></span>
+<span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span>
+<span class="line">  &#125;</span>
+<span class="line"></span>
+<span class="line">  <span class="keyword">if</span> (<span class="built_in">arguments</span>.length &lt; <span class="number">1</span>) &#123;</span>
+<span class="line">    <span class="keyword">return</span> <span class="literal">true</span>; <span class="comment">//Die silently? Don't know how to handle such case, please help...</span></span>
+<span class="line">    <span class="comment">// throw "Need two or more arguments to compare";</span></span>
+<span class="line">  &#125;</span>
+<span class="line"></span>
+<span class="line">  <span class="keyword">for</span> (i = <span class="number">1</span>, l = <span class="built_in">arguments</span>.length; i &lt; l; i++) &#123;</span>
+<span class="line"></span>
+<span class="line">      leftChain = []; <span class="comment">//Todo: this can be cached</span></span>
+<span class="line">      rightChain = [];</span>
+<span class="line"></span>
+<span class="line">      <span class="keyword">if</span> (!compare2Objects(<span class="built_in">arguments</span>[<span class="number">0</span>], <span class="built_in">arguments</span>[i])) &#123;</span>
+<span class="line">          <span class="keyword">return</span> <span class="literal">false</span>;</span>
+<span class="line">      &#125;</span>
+<span class="line">  &#125;</span>
+<span class="line"></span>
+<span class="line">  <span class="keyword">return</span> <span class="literal">true</span>;</span>
+<span class="line">&#125;</span>
+</pre></td></tr></table></figure></div><div class="tags"><a href="/tags/js/">js</a></div><div class="post-share"><div class="bdsharebuttonbox"><span style="float:left;line-height: 28px;height: 28px;font-size:16px;font-weight:blod">分享到：</span><a href="#" data-cmd="more" class="bds_more"></a><a href="#" data-cmd="mshare" title="分享到一键分享" class="bds_mshare"></a><a href="#" data-cmd="fbook" title="分享到Facebook" class="bds_fbook"></a><a href="#" data-cmd="twi" title="分享到Twitter" class="bds_twi"></a><a href="#" data-cmd="linkedin" title="分享到linkedin" class="bds_linkedin"></a><a href="#" data-cmd="youdao" title="分享到有道云笔记" class="bds_youdao"></a><a href="#" data-cmd="evernotecn" title="分享到印象笔记" class="bds_evernotecn"></a><a href="#" data-cmd="weixin" title="分享到微信" class="bds_weixin"></a><a href="#" data-cmd="qzone" title="分享到QQ空间" class="bds_qzone"></a><a href="#" data-cmd="tsina" title="分享到新浪微博" class="bds_tsina"></a></div></div><div class="post-nav"><a href="/2018/01/02/mongoose/" class="next">mongoose 简易教程</a></div><div id="comments"><div id="SOHUCS" sid="2018/01/26/deep-compare/"></div></div></div></div></div><div class="layout-r"><div id="sidebar"><div class="search-pla"></div><div id="toc" class="widget"><div class="widget-title"><i class="fa fa-fei">文章目录</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-xie"> 最新文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/01/26/deep-compare/">deep-compare</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/02/mongoose/">mongoose 简易教程</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/02/mongodb/">mongodb 数据库</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/27/tail/">tail 命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/26/dom-model/">dom 知识汇总</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/23/enable-mysite-https/">网站升级 HTTPS</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/19/position-sticky/">position-sticky</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/15/custom-range-style/">自定义 range input 样式</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/11/03/words-for-it/">IT 必备词汇</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/09/21/arrsort/">数组排序算法</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-gui"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/前端/">前端</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/文章/">文章</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网站/">网站</a><span class="category-list-count">1</span></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-biao"> 标签</i></div><div class="tagcloud"><a href="/tags/js/" style="font-size: 15px;">js</a> <a href="/tags/css/" style="font-size: 15px;">css</a> <a href="/tags/nginx/" style="font-size: 15px;">nginx</a> <a href="/tags/mongodb/" style="font-size: 15px;">mongodb</a> <a href="/tags/English/" style="font-size: 15px;">English</a> <a href="/tags/shell/" style="font-size: 15px;">shell</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-archive"> 归档</i></div><ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-you"> 友情链接</i></div><ul></ul><a href="http://www.newming.cn/" title="个人网站" target="_blank">个人网站</a><ul></ul><a href="https://github.com/newming" title="github" target="_blank">github</a><ul></ul><a href="https://coding.net/user" title="coding" target="_blank">coding</a></div></div></div></div><a id="totop" href="#top"></a><div id="footer"><div class="footer-info"><p><a href="/baidusitemap.xml">Baidu Site Haritası</a> |  <a href="/atom.xml">订阅</a> |  <a href="/about/">关于</a></p><p>本站总访问量：<i id="busuanzi_container_site_pv"><i id="busuanzi_value_site_pv"></i></i>次</p><p><span> Copyright &copy;<a href="/." rel="nofollow">Newming.</a></span><span> Theme by<a rel="nofollow" target="_blank" href="https://github.com/chaooo/hexo-theme-BlueLake"> BlueLake.</a></span><span> Count by<a href="http://busuanzi.ibruce.info/"> busuanzi.</a></span><span> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a></span></p></div></div></div><script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js" async></script><script type="text/javascript" src="/js/search.json.js?v=2.0.1"></script><script type="text/javascript" src="/js/toctotop.js?v=2.0.1" async></script><script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["mshare","weixin","tsina","qzone","linkedin","fbook","twi","print","renren","sqq","evernotecn","bdysc","tqq","tqf","bdxc","kaixin001","tieba","douban","bdhome","thx","ibaidu","meilishuo","mogujie","diandian","huaban","duitang","hx","fx","youdao","sdo","qingbiji","people","xinhua","mail","isohu","yaolan","wealink","ty","iguba","h163","copy"],"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["tsina","qzone","weixin","fbook","twi","linkedin","youdao","evernotecn","mshare"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["tsina","qzone","weixin","fbook","twi","linkedin","youdao","evernotecn","mshare"]}};with(document)0[(getElementsByTagName('head')[0]||head).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
 </script><script>window._config = { showScore: true };
 (function(){ 
   var appid = 'cytd93gvc'; 

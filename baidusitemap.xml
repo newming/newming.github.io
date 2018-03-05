@@ -4,6 +4,44 @@
 
     
   <url>
+    <loc>https://newming.github.io/2018/03/05/margin-collapse/</loc>
+    <lastmod>2018-03-05T05:44:13.471Z</lastmod>
+    <data>
+        <display>
+        <title>深入理解 margin collapse 及 BFC</title>
+        <pubTime>2018-03-05T04:59:18.000Z</pubTime>
+        
+        <tag>css</tag>
+         
+         
+           
+             
+              <breadCrumb title="前端" url="https://newming.github.io/categories/%E5%89%8D%E7%AB%AF/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://newming.github.io/2017/09/07/introduce/</loc>
+    <lastmod>2018-03-05T04:57:28.518Z</lastmod>
+    <data>
+        <display>
+        <title>introduce</title>
+        <pubTime>2017-09-07T04:59:46.000Z</pubTime>
+        
+         
+           
+             
+              <breadCrumb title="文章" url="https://newming.github.io/categories/%E6%96%87%E7%AB%A0/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://newming.github.io/2018/03/02/css%E4%BC%AA%E7%B1%BB%E5%8F%8A%E4%BC%AA%E5%85%83%E7%B4%A0/</loc>
     <lastmod>2018-03-03T06:41:05.492Z</lastmod>
     <data>
@@ -117,24 +155,6 @@
            
              
               <breadCrumb title="数据库" url="https://newming.github.io/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://newming.github.io/2017/09/07/introduce/</loc>
-    <lastmod>2017-12-27T03:08:12.711Z</lastmod>
-    <data>
-        <display>
-        <title>introduce</title>
-        <pubTime>2017-09-07T04:59:46.000Z</pubTime>
-        
-         
-           
-             
-              <breadCrumb title="文章" url="https://newming.github.io/categories/%E6%96%87%E7%AB%A0/"/>
           
         </display>
     </data>

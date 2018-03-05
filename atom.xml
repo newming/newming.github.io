@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://newming.github.io/"/>
-  <updated>2018-03-03T06:41:05.492Z</updated>
+  <updated>2018-03-05T05:44:13.471Z</updated>
   <id>https://newming.github.io/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>深入理解 margin collapse 及 BFC</title>
+    <link href="https://newming.github.io/2018/03/05/margin-collapse/"/>
+    <id>https://newming.github.io/2018/03/05/margin-collapse/</id>
+    <published>2018-03-05T04:59:18.000Z</published>
+    <updated>2018-03-05T05:44:13.471Z</updated>
+    
+    <content type="html"><![CDATA[<p>外边距融合对于前端的同学应该是不陌生，之前当我遇到这种问题时，可能很多人随手换个 css 属性解决后即不在思考或总结这个问题的解决办法，前几天看到这么一个<a href="https://github.com/wintercn/blog/issues/4" target="_blank" rel="external">讨论</a>，发现出现了很多之前没有见过的 css 方面的名次，感觉需要去深入的了解一下这块了。</p><p>这节内容主要说明 margin collapse 及 BFC 这两个东西，主要参考 <a href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_Box_Model/Mastering_margin_collapsing" target="_blank" rel="external">MDN</a> 及 <a href="https://css-tricks.com/what-you-should-know-about-collapsing-margins/" target="_blank" rel="external">css tricks</a>，<a href="https://www.w3cplus.com/css/understanding-bfc-and-margin-collapse.html" target="_blank" rel="external">Pet 的博客</a> 的这几篇文章。</p><h3 id="margin-collapse"><a href="#margin-collapse" class="headerlink" title="margin collapse"></a>margin collapse</h3><p>块的顶部外边距和底部外边距有时被组合(折叠)为单个外边距，其大小是组合到其中的最大外边距，这种行为称为<strong>外边距塌陷</strong>(margin collapsing)，有的地方翻译为<strong>外边距合并</strong>。</p><p>发生外边距塌陷的三种基本情况:</p><h5 id="相邻的兄弟姐妹元素"><a href="#相邻的兄弟姐妹元素" class="headerlink" title="相邻的兄弟姐妹元素"></a>相邻的兄弟姐妹元素</h5><p>毗邻的两个兄弟元素之间的外边距会塌陷（除非后者兄弟姐妹需要清除过去的浮动）。例如：</p><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">p</span> <span class="attr">style</span>=<span class="string">"margin-bottom: 30px;"</span>&gt;</span>这个段落的下外边距被合并...<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><span class="line"><span class="tag">&lt;<span class="name">p</span> <span class="attr">style</span>=<span class="string">"margin-top: 20px;"</span>&gt;</span>...这个段落的上外边距被合并。<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></pre></td></tr></table></figure><p>可以发现这两个段落中间的距离，不是 ”上面段落的下边距“ 与 ”下面段落的上边距“ 的 求和 ，而是两者中的较大者（在此示例中为30px）。</p><h5 id="块级父元素与其第一个-最后一个子元素"><a href="#块级父元素与其第一个-最后一个子元素" class="headerlink" title="块级父元素与其第一个/最后一个子元素"></a>块级父元素与其第一个/最后一个子元素</h5><p>如果块级父元素中，不存在上边框、上内边距、内联元素、块格式化上下文、 清除浮动 这五条（也可以说，当上边框宽度及上内边距距离为0时），那么这个块级元素和其第一个子元素的上边距就可以说”挨到了一起“。此时这个块级父元素和其第一个子元素就会发生上外边距合并现象，换句话说，此时这个父元素对外展现出来的外边距将直接变成这个父元素和其第一个子元素的margin-top的较大者。<br>类似的，若块级父元素的 margin-bottom 与它的最后一个子元素的margin-bottom 之间没有父元素的 border、padding、inline content、height、min-height、 max-height 分隔时，就会发生 下外边距合并 现象。</p><h5 id="空块元素"><a href="#空块元素" class="headerlink" title="空块元素"></a>空块元素</h5><p>如果存在一个空的块级元素，其 border、padding、inline content、height、min-height 都不存在。那么此时它的上下边距中间将没有任何阻隔，此时它的上下外边距将会合并。例如：</p><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><span class="line">2</span><span class="line">3</span><span class="line">4</span><span class="line">5</span></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">p</span> <span class="attr">style</span>=<span class="string">"margin-bottom: 0px;"</span>&gt;</span>这个段落的和下面段落的距离将为20px<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><span class="line"></span><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">"margin-top: 20px; margin-bottom: 20px;"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><span class="line"></span><span class="line"><span class="tag">&lt;<span class="name">p</span> <span class="attr">style</span>=<span class="string">"margin-top: 0px;"</span>&gt;</span>这个段落的和上面段落的距离将为20px<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></pre></td></tr></table></figure><p>当以上情形同时出现时，外边距合并会更加复杂（会比较两个以上外边距来最终计算出真实的边距值）。</p><p>即使外边距为0，这些规则也仍旧生效。因此，无论父元素的外边距是否为0，第一个或者最后一个子元素的外边距会被父元素的外边距”截断”(根据上面的规则)，在负外边距的情况下，合并后的外边距为最大正外边距与最小负外边距之和。</p><p>当有负边距存在时，合并后的外边距将是最大正边距加上最小负边距（即负边距中绝对值最大的一个）。</p><p>如两个兄弟元素，上面的元素的下边距为 20px ，下面的元素的上边距为 -20px ，那么发生外边距合并后，这两个元素的实际距离将变成 0px 。</p><p>BFC（Block Formatting Context 块格式化上下文）与元素外边距合并 :</p><ul><li>当两个元素属于不同的BFC时，这两个元素的外边距不会合并。</li><li>但在同一个BFC内，两个相邻元素的外边距仍会合并。</li></ul><p>具体 margin collapse 问题怎么表现，可以看 <a href="https://css-tricks.com/what-you-should-know-about-collapsing-margins/" target="_blank" rel="external">css tricks</a> 的文章，里边有具体的例子及代码。</p><p><strong>怎么解决呢</strong></p><p>其实解决办法很简单，css tricks 上是用的 padding。其实只要存在 上边框、上内边距、内联元素、块格式化上下文、 清除浮动 这些属性，就不会有 margin collapse 问题。</p><p>### 块格式化上下文</p><p><a href="https://developer.mozilla.org/zh-CN/docs/Web/Guide/CSS/Block_formatting_context" target="_blank" rel="external">MDN BFC</a></p><p><strong>块格式化上下文(Block Formatting Context，BFC)</strong>，是Web页面的可视化CSS渲染的部分，是块级盒布局发生的区域，也是浮动元素与其他元素交互的区域。</p><p>创建块格式化上下文的方式如下：</p><ul><li>根元素或其它包含它的元素</li><li>浮动元素 (元素的 float 不是 none)</li><li>绝对定位元素 (元素的 position 为 absolute 或 fixed)</li><li>内联块元素 (元素具有 display: inline-block)</li><li>表格单元格 (元素具有 display: table-cell，HTML表格单元格默认属性)</li><li>表格标题 (元素具有 display: table-caption, HTML表格标题默认属性)</li><li>匿名表格元素 (元素具有 display: table, table-row, table-row-group, table-header-group, table-footer-group [分别是HTML tables, table rows, table bodies, table headers and table footers的默认属性]，或 inline-table )</li><li>overflow 值不为 visible 的块元素，</li><li>display 值为 flow-root 的元素</li><li>contain 值为 layout, content, 或 strict 的元素</li><li>弹性元素 (display: flex 或 inline-flex元素的子元素)</li><li>网格元素 (display: grid 或 inline-grid 元素的子元素)</li><li>多列容器 (元素的 column-count 或 column-width 不为 auto 即视为多列，column-count: 1的元素也属于多列)</li><li>即便具有 column-span: all 的元素没有被包裹在一个多列容器中，column-span: all 也始终会创建一个新的格式化上下文。</li><li>块格式化上下文包含创建它的元素内的所有内容。</li></ul><p>块格式化上下文对于定位 (参见 <a href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/float" target="_blank" rel="external">float</a>) 与清除浮动 (参见 <a href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/clear" target="_blank" rel="external">clear</a>) 很重要。定位和清除浮动的样式规则只适用于处于同一块格式化上下文内的元素。浮动不会影响其它块格式化上下文中元素的布局，并且清除浮动只能清除同一块格式化上下文中在它前面的元素的浮动。</p><blockquote><p>注意：Margin collapsing也只发生在属于同一块格式化上下文的块级元素之间。</p></blockquote>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;外边距融合对于前端的同学应该是不陌生，之前当我遇到这种问题时，可能很多人随手换个 css 属性解决后即不在思考或总结这个问题的解决办法，前几天看到这么一个&lt;a href=&quot;https://github.com/wintercn/blog/issues/4&quot; target=&quot;
+      
+    
+    </summary>
+    
+      <category term="前端" scheme="https://newming.github.io/categories/%E5%89%8D%E7%AB%AF/"/>
+    
+    
+      <category term="css" scheme="https://newming.github.io/tags/css/"/>
+    
+  </entry>
   
   <entry>
     <title>css 伪类及伪元素</title>
@@ -339,16 +364,16 @@
     <link href="https://newming.github.io/2017/09/07/introduce/"/>
     <id>https://newming.github.io/2017/09/07/introduce/</id>
     <published>2017-09-07T04:59:46.000Z</published>
-    <updated>2017-12-27T03:08:12.711Z</updated>
+    <updated>2018-03-05T04:57:28.518Z</updated>
     
-    <content type="html"><![CDATA[<p>关于本博客介绍</p><p>额，目前定位为自己的一个写笔记的地方，不知道将来写不写。</p>]]></content>
+    <content type="html"><![CDATA[<p>关于本博客介绍</p><p>随手记录工作中的一些经验新得，或者是一些其他的东西。内容可能会涉及前端(主要)，后端，数据库，nginx，网站，英语等等。</p>]]></content>
     
     <summary type="html">
     
       
       
         &lt;p&gt;关于本博客介绍&lt;/p&gt;
-&lt;p&gt;额，目前定位为自己的一个写笔记的地方，不知道将来写不写。&lt;/p&gt;
+&lt;p&gt;随手记录工作中的一些经验新得，或者是一些其他的东西。内容可能会涉及前端(主要)，后端，数据库，nginx，网站，英语等等。&lt;/p&gt;
 
       
     

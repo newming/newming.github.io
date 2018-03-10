@@ -1,0 +1,631 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="Newming(钮旭明) 的个人博客笔记文档，Newming(钮旭明) 的前端笔记，Newming(钮旭明) 的前端博客文章"><title>problem with promise | 前端资源部</title><link rel="stylesheet" type="text/css" href="//fonts.css.network/css?family=Source+Code+Pro"><link rel="stylesheet" type="text/css" href="/css/style.css?v=2.0.1"><link rel="stylesheet" type="text/css" href="/css/highlight.css?v=2.0.1"><link rel="Shortcut Icon" href="/favicon.ico"><link rel="bookmark" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?ad4570b1386e79a9e6a7ec30f923e06d";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();</script></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">problem with promise</h1><a id="logo" href="/.">前端资源部</a><p class="description">Newming(钮旭明) 的前端笔记</p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div><div id="search-form"><div id="result-mask" class="hide"></div><label><input id="search-key" type="text" autocomplete="off" placeholder="Newming"></label><div id="result-wrap" class="hide"><div id="search-result"></div></div><div class="hide"><template id="search-tpl"><div class="item"><a href="/{path}" title="{title}"><div class="title">{title}</div><div class="time">{date}</div><div class="tags">{tags}</div></a></div></template></div></div></div><div id="layout" class="layout-g"><div class="layout-l"><div class="content_container"><div class="post"><h1 class="post-title">problem with promise</h1><div class="post-meta"><a href="/2018/03/08/problem-with-promise/#comments" class="comment-count"><i id="changyan_count_unit" data-xid="2018/03/08/problem-with-promise/"></i>留言,<i id="changyan_parti_unit" data-xid="2018/03/08/problem-with-promise/"></i>参与</a><p><span class="date">Mar 08, 2018</span><span><a href="/categories/前端/" class="category">前端</a></span><span><i id="busuanzi_container_page_pv"><i id="busuanzi_value_page_pv"></i><i>点击</i></i></span></p></div><div class="post-content"><p>今天来聊聊 <code>promise</code> 对象的一些问题。内容主要来自 <a href="https://pouchdb.com/2015/05/18/we-have-a-problem-with-promises.html" target="_blank" rel="external">We have a problem with promises</a> 这篇文章。英语水平有限，翻译存在不当。</p>
+<p>首先来看下面的这个问题。<code>doSomething</code> 和 <code>doSomethingElse</code> 都是函数，返回一个 promise 对象。</p>
+<p><strong>问：下面的是个 promise 有什么区别？</strong></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+<span class="line">7</span>
+<span class="line">8</span>
+<span class="line">9</span>
+<span class="line">10</span>
+<span class="line">11</span>
+</pre></td><td class="code"><pre><span class="line">doSomething().then(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">  <span class="keyword">return</span> doSomethingElse();</span>
+<span class="line">&#125;);</span>
+<span class="line"></span>
+<span class="line">doSomething().then(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">  doSomethingElse();</span>
+<span class="line">&#125;);</span>
+<span class="line"></span>
+<span class="line">doSomething().then(doSomethingElse());</span>
+<span class="line"></span>
+<span class="line">doSomething().then(doSomethingElse);</span>
+</pre></td></tr></table></figure>
+<p>在回答这个问题之前，我们先来看几个 promise 新手常犯的错误。</p>
+<h2 id="低级错误"><a href="#低级错误" class="headerlink" title="低级错误"></a>低级错误</h2><h3 id="错误-1：promise-调用地狱"><a href="#错误-1：promise-调用地狱" class="headerlink" title="错误 1：promise 调用地狱"></a>错误 1：promise 调用地狱</h3><p>下面是人们在使用 PouchDB 的 promise API 中最常见的一些不好的实践。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+<span class="line">7</span>
+<span class="line">8</span>
+<span class="line">9</span>
+<span class="line">10</span>
+<span class="line">11</span>
+<span class="line">12</span>
+<span class="line">13</span>
+</pre></td><td class="code"><pre><span class="line">remotedb.allDocs(&#123;</span>
+<span class="line">  include_docs: <span class="literal">true</span>,</span>
+<span class="line">  attachments: <span class="literal">true</span></span>
+<span class="line">&#125;).then(<span class="function"><span class="keyword">function</span> (<span class="params">result</span>) </span>&#123;</span>
+<span class="line">  <span class="keyword">var</span> docs = result.rows;</span>
+<span class="line">  docs.forEach(<span class="function"><span class="keyword">function</span>(<span class="params">element</span>) </span>&#123;</span>
+<span class="line">    localdb.put(element.doc).then(<span class="function"><span class="keyword">function</span>(<span class="params">response</span>) </span>&#123;</span>
+<span class="line">      alert(<span class="string">"Pulled doc with id "</span> + element.doc._id + <span class="string">" and added to local db."</span>);</span>
+<span class="line">    &#125;).catch(<span class="function"><span class="keyword">function</span> (<span class="params">err</span>) </span>&#123;</span>
+<span class="line">      <span class="keyword">if</span> (err.name == <span class="string">'conflict'</span>) &#123;</span>
+<span class="line">        localdb.get(element.doc._id).then(<span class="function"><span class="keyword">function</span> (<span class="params">resp</span>) </span>&#123;</span>
+<span class="line">          localdb.remove(resp._id, resp._rev).then(<span class="function"><span class="keyword">function</span> (<span class="params">resp</span>) </span>&#123;</span>
+<span class="line"><span class="comment">// et cetera...</span></span>
+</pre></td></tr></table></figure>
+<p>下面是上面例子的一个更好的写法。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+<span class="line">7</span>
+<span class="line">8</span>
+<span class="line">9</span>
+</pre></td><td class="code"><pre><span class="line">remotedb.allDocs(...).then(<span class="function"><span class="keyword">function</span> (<span class="params">resultOfAllDocs</span>) </span>&#123;</span>
+<span class="line">  <span class="keyword">return</span> localdb.put(...);</span>
+<span class="line">&#125;).then(<span class="function"><span class="keyword">function</span> (<span class="params">resultOfPut</span>) </span>&#123;</span>
+<span class="line">  <span class="keyword">return</span> localdb.get(...);</span>
+<span class="line">&#125;).then(<span class="function"><span class="keyword">function</span> (<span class="params">resultOfGet</span>) </span>&#123;</span>
+<span class="line">  <span class="keyword">return</span> localdb.put(...);</span>
+<span class="line">&#125;).catch(<span class="function"><span class="keyword">function</span> (<span class="params">err</span>) </span>&#123;</span>
+<span class="line">  <span class="built_in">console</span>.log(err);</span>
+<span class="line">&#125;);</span>
+</pre></td></tr></table></figure>
+<p>这叫做 <code>composing promises</code>，每一个函数都必须等到前一个 promise 呼叫了 resolved 才会执行，拿到返回值。</p>
+<h3 id="错误-2：在-promise-如何实用-forEach"><a href="#错误-2：在-promise-如何实用-forEach" class="headerlink" title="错误 2：在 promise 如何实用 forEach"></a>错误 2：在 promise 如何实用 forEach</h3><p>这里会使多数刚开始使用 promise 的人陷入疑惑，当他们在使用 promise 过程中遇到类似 forEach(), for, while 这样的循环，他们不知道该如何处理循环与 promise 的同时使用。于是会出现下面的代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+<span class="line">7</span>
+<span class="line">8</span>
+</pre></td><td class="code"><pre><span class="line"><span class="comment">// I want to remove() all docs</span></span>
+<span class="line">db.allDocs(&#123;<span class="attr">include_docs</span>: <span class="literal">true</span>&#125;).then(<span class="function"><span class="keyword">function</span> (<span class="params">result</span>) </span>&#123;</span>
+<span class="line">  result.rows.forEach(<span class="function"><span class="keyword">function</span> (<span class="params">row</span>) </span>&#123;</span>
+<span class="line">    db.remove(row.doc);</span>
+<span class="line">  &#125;);</span>
+<span class="line">&#125;).then(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">  <span class="comment">// I naively believe all docs have been removed() now!</span></span>
+<span class="line">&#125;);</span>
+</pre></td></tr></table></figure>
+<p>上面代码的问题是第一个函数实际上返回的是 <code>undefined</code>，这意味着第二个函数并没有等到 <code>db.remove()</code> 执行到所有的文档中。事实上，第二个函数并没有进行等待，而是在没有任何文档被删除的时候就执行了。</p>
+<p>这是一个非常隐蔽的 bug 因为你可能不会注意到哪里错了，如果 PouchDB 删除这些文档足够快的话，让你更新你的 UI。</p>
+<p>这里实际上你需要使用 Promise.all：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+<span class="line">7</span>
+</pre></td><td class="code"><pre><span class="line">db.allDocs(&#123;<span class="attr">include_docs</span>: <span class="literal">true</span>&#125;).then(<span class="function"><span class="keyword">function</span> (<span class="params">result</span>) </span>&#123;</span>
+<span class="line">  <span class="keyword">return</span> <span class="built_in">Promise</span>.all(result.rows.map(<span class="function"><span class="keyword">function</span> (<span class="params">row</span>) </span>&#123;</span>
+<span class="line">    <span class="keyword">return</span> db.remove(row.doc);</span>
+<span class="line">  &#125;));</span>
+<span class="line">&#125;).then(<span class="function"><span class="keyword">function</span> (<span class="params">arrayOfResults</span>) </span>&#123;</span>
+<span class="line">  <span class="comment">// All docs have really been removed() now!</span></span>
+<span class="line">&#125;);</span>
+</pre></td></tr></table></figure>
+<p>Promise.all() 接受一个包含其他 promise 的数组作为参数，当参数中每一项 promise 状态变为 resolve 的时候 Promise.all() 会返回一个 resolve。</p>
+<h3 id="错误-3：忘记添加-catch"><a href="#错误-3：忘记添加-catch" class="headerlink" title="错误 3：忘记添加 .catch()"></a>错误 3：忘记添加 .catch()</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+</pre></td><td class="code"><pre><span class="line">somePromise().then(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">  <span class="keyword">return</span> anotherPromise();</span>
+<span class="line">&#125;).then(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">  <span class="keyword">return</span> yetAnotherPromise();</span>
+<span class="line">&#125;).catch(<span class="built_in">console</span>.log.bind(<span class="built_in">console</span>)); <span class="comment">// &lt;-- this is badass</span></span>
+</pre></td></tr></table></figure>
+<p>强烈建议使用 catch</p>
+<h3 id="错误-4：using-‘deferred’"><a href="#错误-4：using-‘deferred’" class="headerlink" title="错误 4：using ‘deferred’"></a>错误 4：using ‘deferred’</h3><p>可以借助一些第三方库在不支持 promise 的地方来使用 promise。比如 Bluebird, Lie 等等。也可以将一些非 promise 的 api 封装成 promise</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+<span class="line">7</span>
+<span class="line">8</span>
+</pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="keyword">function</span> (<span class="params">resolve, reject</span>) </span>&#123;</span>
+<span class="line">  fs.readFile(<span class="string">'myfile.txt'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">err, file</span>) </span>&#123;</span>
+<span class="line">    <span class="keyword">if</span> (err) &#123;</span>
+<span class="line">      <span class="keyword">return</span> reject(err);</span>
+<span class="line">    &#125;</span>
+<span class="line">    resolve(file);</span>
+<span class="line">  &#125;);</span>
+<span class="line">&#125;).then(<span class="comment">/* ... */</span>)</span>
+</pre></td></tr></table></figure>
+<h3 id="问题-5：using-side-effects-instead-of-returning"><a href="#问题-5：using-side-effects-instead-of-returning" class="headerlink" title="问题 5：using side effects instead of returning"></a>问题 5：using side effects instead of returning</h3><p>使用副作用而不是返回值。。。</p>
+<p>下面的错误代码中，第二个 then 并不会等到 someOtherPromise resolve 后执行。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+</pre></td><td class="code"><pre><span class="line">somePromise().then(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">  someOtherPromise();</span>
+<span class="line">&#125;).then(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">  <span class="comment">// Gee, I hope someOtherPromise() has resolved!</span></span>
+<span class="line">  <span class="comment">// Spoiler alert: it hasn't.</span></span>
+<span class="line">&#125;);</span>
+</pre></td></tr></table></figure>
+<p>接下来来说一个你必须要知道的关于 promise 的东西。</p>
+<p>promise 的魔法在于它会返回我们 return 和 throw 的值。但是这个在实践中是什么样的呢？每一个 promise 都有一个 then 方法(或者是 <code>then(null, ...)</code> 的语法糖 <code>catch()</code> 方法 )。下面是一个处于 then() 中的函数：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+</pre></td><td class="code"><pre><span class="line">somePromise().then(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">  <span class="comment">// I'm inside a then() function!</span></span>
+<span class="line">&#125;);</span>
+</pre></td></tr></table></figure>
+<p>我们能在函数内部做什么呢？有以下三件事：</p>
+<ol>
+<li>return 另一个 promise</li>
+<li>return 一个同步的值或者 undefined</li>
+<li>抛出一个同步的错误</li>
+</ol>
+<p>如果你理解了以上三点，你就理解了 promise。下面我们来逐个分析每一点。</p>
+<p><strong>1. return 另一个 promise</strong></p>
+<p>下面是一个普通的例子，如同上面 <code>composing promises</code> 的例子。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+</pre></td><td class="code"><pre><span class="line">getUserByName(<span class="string">'nolan'</span>).then(<span class="function"><span class="keyword">function</span> (<span class="params">user</span>) </span>&#123;</span>
+<span class="line">  <span class="keyword">return</span> getUserAccountById(user.id);</span>
+<span class="line">&#125;).then(<span class="function"><span class="keyword">function</span> (<span class="params">userAccount</span>) </span>&#123;</span>
+<span class="line">  <span class="comment">// I got a user account!</span></span>
+<span class="line">&#125;);</span>
+</pre></td></tr></table></figure>
+<p>注意返回的第二个 promise getUserAccountById。这里这个 <code>return</code> 关键字至关重要。如果没有 return，getUserAccountById() 将变为无用的，在第二个 then 中将拿到 undefined 而不是 userAccount</p>
+<p><strong>2. 返回一个同步的值或者 undefined</strong></p>
+<p>返回 undefined 通常是一个错误，但是如果返回一个同步的值通常是不错的作法在 promise 代码中传递同步的代码。例如，我们有一个缓存中的用户信息。我们可以这样做：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+<span class="line">7</span>
+<span class="line">8</span>
+</pre></td><td class="code"><pre><span class="line">getUserByName(<span class="string">'nolan'</span>).then(<span class="function"><span class="keyword">function</span> (<span class="params">user</span>) </span>&#123;</span>
+<span class="line">  <span class="keyword">if</span> (inMemoryCache[user.id]) &#123;</span>
+<span class="line">    <span class="keyword">return</span> inMemoryCache[user.id];    <span class="comment">// returning a synchronous value!</span></span>
+<span class="line">  &#125;</span>
+<span class="line">  <span class="keyword">return</span> getUserAccountById(user.id); <span class="comment">// returning a promise!</span></span>
+<span class="line">&#125;).then(<span class="function"><span class="keyword">function</span> (<span class="params">userAccount</span>) </span>&#123;</span>
+<span class="line">  <span class="comment">// I got a user account!</span></span>
+<span class="line">&#125;);</span>
+</pre></td></tr></table></figure>
+<p>在第二个函数中，我们不必关心 userAccount 是来自同步的还是异步的，第一个函数中既可以同步或异步的值。</p>
+<p>需要注意，如果没有返回值的话，将会返回 undefined。所以建议总是返回结果或抛出错误在 then() 方法中。</p>
+<p><strong>3. 抛出同步错误</strong></p>
+<p>说到错误处理，这是 promise 中非常值得称赞的地方。比如我们想再用过登出后抛出一个错误，这个十分简单：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+<span class="line">7</span>
+<span class="line">8</span>
+<span class="line">9</span>
+<span class="line">10</span>
+<span class="line">11</span>
+<span class="line">12</span>
+<span class="line">13</span>
+</pre></td><td class="code"><pre><span class="line">getUserByName(<span class="string">'nolan'</span>).then(<span class="function"><span class="keyword">function</span> (<span class="params">user</span>) </span>&#123;</span>
+<span class="line">  <span class="keyword">if</span> (user.isLoggedOut()) &#123;</span>
+<span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'user logged out!'</span>); <span class="comment">// throwing a synchronous error!</span></span>
+<span class="line">  &#125;</span>
+<span class="line">  <span class="keyword">if</span> (inMemoryCache[user.id]) &#123;</span>
+<span class="line">    <span class="keyword">return</span> inMemoryCache[user.id];       <span class="comment">// returning a synchronous value!</span></span>
+<span class="line">  &#125;</span>
+<span class="line">  <span class="keyword">return</span> getUserAccountById(user.id);    <span class="comment">// returning a promise!</span></span>
+<span class="line">&#125;).then(<span class="function"><span class="keyword">function</span> (<span class="params">userAccount</span>) </span>&#123;</span>
+<span class="line">  <span class="comment">// I got a user account!</span></span>
+<span class="line">&#125;).catch(<span class="function"><span class="keyword">function</span> (<span class="params">err</span>) </span>&#123;</span>
+<span class="line">  <span class="comment">// Boo, I got an error!</span></span>
+<span class="line">&#125;);</span>
+</pre></td></tr></table></figure>
+<p>catch 将会收到一个同步的错误如果用户登出了，并且它将捕获一个异步的错误不论任何 promise rejected。另外，catch 不考虑它得到的错误是同步还是异步的。</p>
+<p>这一点非常有用，因为它能帮助我们在开发中捕获代码错误，不论错误在哪个 then() 方法函数内抛出。</p>
+<h2 id="高级错误"><a href="#高级错误" class="headerlink" title="高级错误"></a>高级错误</h2><h3 id="问题-1：不知道-Promise-resolve"><a href="#问题-1：不知道-Promise-resolve" class="headerlink" title="问题 1：不知道 Promise.resolve()"></a>问题 1：不知道 Promise.resolve()</h3><p>正如上边代码展示，promise 在将同步代码转为异步代码中非常有用，然而，如果你发现你写了很多类似下边的代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+</pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="keyword">function</span> (<span class="params">resolve, reject</span>) </span>&#123;</span>
+<span class="line">  resolve(someSynchronousValue);</span>
+<span class="line">&#125;).then(<span class="comment">/* ... */</span>);</span>
+</pre></td></tr></table></figure>
+<p>你可以使用 Promise.resolve() 来更加简明的实现上边的功能：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+</pre></td><td class="code"><pre><span class="line"><span class="built_in">Promise</span>.resolve(someSynchronousValue).then(<span class="comment">/* ... */</span>);</span>
+</pre></td></tr></table></figure>
+<p>同样非常有用在捕获任何同步错误。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+</pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">somePromiseAPI</span>(<span class="params"></span>) </span>&#123;</span>
+<span class="line">  <span class="keyword">return</span> <span class="built_in">Promise</span>.resolve().then(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">    doSomethingThatMayThrow();</span>
+<span class="line">    <span class="keyword">return</span> <span class="string">'foo'</span>;</span>
+<span class="line">  &#125;).then(<span class="comment">/* ... */</span>);</span>
+<span class="line">&#125;</span>
+</pre></td></tr></table></figure>
+<p>如果你使用 Promise.resolve() 包裹一切，记得要 catch 可能出现的错误。</p>
+<p>类似的，Promise.reject() 可以立刻返回一个 rejected 的 promise 对象</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+</pre></td><td class="code"><pre><span class="line"><span class="built_in">Promise</span>.reject(<span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'some awful error'</span>));</span>
+</pre></td></tr></table></figure>
+<h3 id="问题-2：then-resolveHandler-catch-rejectHandler-不完全等同于-then-resolveHandler-rejectHandler"><a href="#问题-2：then-resolveHandler-catch-rejectHandler-不完全等同于-then-resolveHandler-rejectHandler" class="headerlink" title="问题 2：then(resolveHandler).catch(rejectHandler) 不完全等同于 then(resolveHandler, rejectHandler)"></a>问题 2：then(resolveHandler).catch(rejectHandler) 不完全等同于 then(resolveHandler, rejectHandler)</h3><p>上面提到 catch() 是 then(null, …) 的语法糖，所以下面的两个片段是相同的：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+<span class="line">7</span>
+</pre></td><td class="code"><pre><span class="line">somePromise().catch(<span class="function"><span class="keyword">function</span> (<span class="params">err</span>) </span>&#123;</span>
+<span class="line">  <span class="comment">// handle error</span></span>
+<span class="line">&#125;);</span>
+<span class="line"></span>
+<span class="line">somePromise().then(<span class="literal">null</span>, <span class="function"><span class="keyword">function</span> (<span class="params">err</span>) </span>&#123;</span>
+<span class="line">  <span class="comment">// handle error</span></span>
+<span class="line">&#125;);</span>
+</pre></td></tr></table></figure>
+<p>但是，这并不意味着下面两个片段相等。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+<span class="line">7</span>
+<span class="line">8</span>
+<span class="line">9</span>
+<span class="line">10</span>
+<span class="line">11</span>
+</pre></td><td class="code"><pre><span class="line">somePromise().then(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">  <span class="keyword">return</span> someOtherPromise();</span>
+<span class="line">&#125;).catch(<span class="function"><span class="keyword">function</span> (<span class="params">err</span>) </span>&#123;</span>
+<span class="line">  <span class="comment">// handle error</span></span>
+<span class="line">&#125;);</span>
+<span class="line"></span>
+<span class="line">somePromise().then(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">  <span class="keyword">return</span> someOtherPromise();</span>
+<span class="line">&#125;, <span class="function"><span class="keyword">function</span> (<span class="params">err</span>) </span>&#123;</span>
+<span class="line">  <span class="comment">// handle error</span></span>
+<span class="line">&#125;);</span>
+</pre></td></tr></table></figure>
+<p>如果你不太清楚为什么它们不想等，考虑一下下面的代码，当第一个函数抛出错误后会发生什么：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+<span class="line">7</span>
+<span class="line">8</span>
+<span class="line">9</span>
+<span class="line">10</span>
+<span class="line">11</span>
+</pre></td><td class="code"><pre><span class="line">somePromise().then(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">  <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'oh noes'</span>);</span>
+<span class="line">&#125;).catch(<span class="function"><span class="keyword">function</span> (<span class="params">err</span>) </span>&#123;</span>
+<span class="line">  <span class="comment">// I caught your error! :)</span></span>
+<span class="line">&#125;);</span>
+<span class="line"></span>
+<span class="line">somePromise().then(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">  <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'oh noes'</span>);</span>
+<span class="line">&#125;, <span class="function"><span class="keyword">function</span> (<span class="params">err</span>) </span>&#123;</span>
+<span class="line">  <span class="comment">// I didn't catch your error! :(</span></span>
+<span class="line">&#125;);</span>
+</pre></td></tr></table></figure>
+<p>正如结果显示，当你使用 <code>then(resolveHandler, rejectHandler)</code> 格式，<code>rejectHandler</code> 并不会捕获到 <code>resolveHandler</code> 自身抛出的错误。</p>
+<p>所以建议永远不要使用 then() 的第二个参数，而是使用 catch()。可以使用下面的 Mocha 测试用例，来避免这个问题。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+<span class="line">7</span>
+</pre></td><td class="code"><pre><span class="line">it(<span class="string">'should throw an error'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">  <span class="keyword">return</span> doSomethingThatThrows().then(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'I expected an error!'</span>);</span>
+<span class="line">  &#125;, <span class="function"><span class="keyword">function</span> (<span class="params">err</span>) </span>&#123;</span>
+<span class="line">    should.exist(err);</span>
+<span class="line">  &#125;);</span>
+<span class="line">&#125;);</span>
+</pre></td></tr></table></figure>
+<h3 id="问题-3：promises-对比-promise-工厂"><a href="#问题-3：promises-对比-promise-工厂" class="headerlink" title="问题 3：promises 对比 promise 工厂"></a>问题 3：promises 对比 promise 工厂</h3><p>假设你想要在一个队列中一个接一个执行一系列的 promise，也就是说，你想要一个类似 Promise.all() 的方法，但是又不是同 Promise.all() 这样并行的执行。</p>
+<p>你也许会天真的写下下面的代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+<span class="line">7</span>
+</pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">executeSequentially</span>(<span class="params">promises</span>) </span>&#123;</span>
+<span class="line">  <span class="keyword">var</span> result = <span class="built_in">Promise</span>.resolve();</span>
+<span class="line">  promises.forEach(<span class="function"><span class="keyword">function</span> (<span class="params">promise</span>) </span>&#123;</span>
+<span class="line">    result = result.then(promise);</span>
+<span class="line">  &#125;);</span>
+<span class="line">  <span class="keyword">return</span> result;</span>
+<span class="line">&#125;</span>
+</pre></td></tr></table></figure>
+<p>不幸的是，结果并不会像你预期的那样。传递给 <code>executeSequentially()</code> 的一系列 promises 仍然并行执行。</p>
+<p>发生这种情况的原因是你不想立刻在一个数组之上运行。每一个 promise 都是不同的，当他一但创造，便执行了。所以你真正需要的是一个由 promise 工厂组成的数组。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+<span class="line">7</span>
+</pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">executeSequentially</span>(<span class="params">promiseFactories</span>) </span>&#123;</span>
+<span class="line">  <span class="keyword">var</span> result = <span class="built_in">Promise</span>.resolve();</span>
+<span class="line">  promiseFactories.forEach(<span class="function"><span class="keyword">function</span> (<span class="params">promiseFactory</span>) </span>&#123;</span>
+<span class="line">    result = result.then(promiseFactory);</span>
+<span class="line">  &#125;);</span>
+<span class="line">  <span class="keyword">return</span> result;</span>
+<span class="line">&#125;</span>
+</pre></td></tr></table></figure>
+<p>一个 promise 工厂非常简单，它仅仅是一个返回 promise 的函数。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+</pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">myPromiseFactory</span>(<span class="params"></span>) </span>&#123;</span>
+<span class="line">  <span class="keyword">return</span> somethingThatCreatesAPromise();</span>
+<span class="line">&#125;</span>
+</pre></td></tr></table></figure>
+<p>为什么这个就生效了，因为 promise 工厂不产生 promise 直到被执行。它的工作方式如同一个 then 函数，事实上，它们是相同的东西。</p>
+<p>上边 myPromiseFactory 实际上是 executeSequentially() 的 result.then() 的替代。</p>
+<h3 id="问题-4：怎么得到两个-promise-的返回值"><a href="#问题-4：怎么得到两个-promise-的返回值" class="headerlink" title="问题 4：怎么得到两个 promise 的返回值"></a>问题 4：怎么得到两个 promise 的返回值</h3><p>通常，一个 promise 依赖于另一个 promise，但是我们想要得到多个 promise 的输出，比如：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+</pre></td><td class="code"><pre><span class="line">getUserByName(<span class="string">'nolan'</span>).then(<span class="function"><span class="keyword">function</span> (<span class="params">user</span>) </span>&#123;</span>
+<span class="line">  <span class="keyword">return</span> getUserAccountById(user.id);</span>
+<span class="line">&#125;).then(<span class="function"><span class="keyword">function</span> (<span class="params">userAccount</span>) </span>&#123;</span>
+<span class="line">  <span class="comment">// dangit, I need the "user" object too!</span></span>
+<span class="line">&#125;);</span>
+</pre></td></tr></table></figure>
+<p>一种解决办法是将 user 对象申明在更高的作用域：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+<span class="line">7</span>
+</pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> user;</span>
+<span class="line">getUserByName(<span class="string">'nolan'</span>).then(<span class="function"><span class="keyword">function</span> (<span class="params">result</span>) </span>&#123;</span>
+<span class="line">  user = result;</span>
+<span class="line">  <span class="keyword">return</span> getUserAccountById(user.id);</span>
+<span class="line">&#125;).then(<span class="function"><span class="keyword">function</span> (<span class="params">userAccount</span>) </span>&#123;</span>
+<span class="line">  <span class="comment">// okay, I have both the "user" and the "userAccount"</span></span>
+<span class="line">&#125;);</span>
+</pre></td></tr></table></figure>
+<p>上边的代码可以实现同时拿到 user 和 userAccount，但是它的写法看起来有些恶心，建议可以写成下面的形式：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+</pre></td><td class="code"><pre><span class="line">getUserByName(<span class="string">'nolan'</span>).then(<span class="function"><span class="keyword">function</span> (<span class="params">user</span>) </span>&#123;</span>
+<span class="line">  <span class="keyword">return</span> getUserAccountById(user.id).then(<span class="function"><span class="keyword">function</span> (<span class="params">userAccount</span>) </span>&#123;</span>
+<span class="line">    <span class="comment">// okay, I have both the "user" and the "userAccount"</span></span>
+<span class="line">  &#125;);</span>
+<span class="line">&#125;);</span>
+</pre></td></tr></table></figure>
+<p>最后可以将输出放入一个命名函数：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+<span class="line">7</span>
+<span class="line">8</span>
+<span class="line">9</span>
+<span class="line">10</span>
+<span class="line">11</span>
+<span class="line">12</span>
+<span class="line">13</span>
+<span class="line">14</span>
+<span class="line">15</span>
+</pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">onGetUserAndUserAccount</span>(<span class="params">user, userAccount</span>) </span>&#123;</span>
+<span class="line">  <span class="keyword">return</span> doSomething(user, userAccount);</span>
+<span class="line">&#125;</span>
+<span class="line"></span>
+<span class="line"><span class="function"><span class="keyword">function</span> <span class="title">onGetUser</span>(<span class="params">user</span>) </span>&#123;</span>
+<span class="line">  <span class="keyword">return</span> getUserAccountById(user.id).then(<span class="function"><span class="keyword">function</span> (<span class="params">userAccount</span>) </span>&#123;</span>
+<span class="line">    <span class="keyword">return</span> onGetUserAndUserAccount(user, userAccount);</span>
+<span class="line">  &#125;);</span>
+<span class="line">&#125;</span>
+<span class="line"></span>
+<span class="line">getUserByName(<span class="string">'nolan'</span>)</span>
+<span class="line">  .then(onGetUser)</span>
+<span class="line">  .then(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">  <span class="comment">// at this point, doSomething() is done, and we are back to indentation 0</span></span>
+<span class="line">&#125;);</span>
+</pre></td></tr></table></figure>
+<p>当你的 promise 代码变得越来越复杂，你会发现你会将越来越多的方法转为命名函数。这会使你的代码看起来很美观：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+</pre></td><td class="code"><pre><span class="line">putYourRightFootIn()</span>
+<span class="line">  .then(putYourRightFootOut)</span>
+<span class="line">  .then(putYourRightFootIn)</span>
+<span class="line">  .then(shakeItAllAbout);</span>
+</pre></td></tr></table></figure>
+<h3 id="问题-5：promises-fall-through"><a href="#问题-5：promises-fall-through" class="headerlink" title="问题 5：promises fall through"></a>问题 5：promises fall through</h3><p>下面的代码会输出什么呢？</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+</pre></td><td class="code"><pre><span class="line"><span class="built_in">Promise</span>.resolve(<span class="string">'foo'</span>).then(<span class="built_in">Promise</span>.resolve(<span class="string">'bar'</span>)).then(<span class="function"><span class="keyword">function</span> (<span class="params">result</span>) </span>&#123;</span>
+<span class="line">  <span class="built_in">console</span>.log(result);</span>
+<span class="line">&#125;);</span>
+</pre></td></tr></table></figure>
+<p>如果你认为是 <code>bar</code>，那么你错了，输出结果为 <code>foo</code>。</p>
+<p>原因是当你给 then() 传入了一个非函数(比如 一个 promise)作为参数，实际上将解释为 then(null)，所以造成了之前的 promise 的结果穿过。你可以测试下下面的代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+</pre></td><td class="code"><pre><span class="line"><span class="built_in">Promise</span>.resolve(<span class="string">'foo'</span>).then(<span class="literal">null</span>).then(<span class="function"><span class="keyword">function</span> (<span class="params">result</span>) </span>&#123;</span>
+<span class="line">  <span class="built_in">console</span>.log(result);</span>
+<span class="line">&#125;);</span>
+</pre></td></tr></table></figure>
+<p>不论在之间添加多少 then(null)，它仍输出 foo。</p>
+<p>这个也正好解释了上面的问题 promise 对比 promise factories。换句话说，你可以直接传入一个 promise 对象给 then() 方法，但是它不会如你所想的方式运行。then() 方法应该接受一个函数作为参数，所以大多数情况下你想要干的是下面这样的：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+</pre></td><td class="code"><pre><span class="line"><span class="built_in">Promise</span>.resolve(<span class="string">'foo'</span>).then(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">  <span class="keyword">return</span> <span class="built_in">Promise</span>.resolve(<span class="string">'bar'</span>);</span>
+<span class="line">&#125;).then(<span class="function"><span class="keyword">function</span> (<span class="params">result</span>) </span>&#123;</span>
+<span class="line">  <span class="built_in">console</span>.log(result);</span>
+<span class="line">&#125;);</span>
+</pre></td></tr></table></figure>
+<p>这次输出的是 bar，正如我们期望的。</p>
+<blockquote>
+<p>所以，时刻提醒自己，总是给 then() 传入一个 function</p>
+</blockquote>
+<h2 id="揭秘时间"><a href="#揭秘时间" class="headerlink" title="揭秘时间"></a>揭秘时间</h2><p>现在我们已经了解了关于 promise 的一切，我们应该可以解决文章开始的题目了。</p>
+<h3 id="问题一"><a href="#问题一" class="headerlink" title="问题一"></a>问题一</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+</pre></td><td class="code"><pre><span class="line">doSomething().then(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">  <span class="keyword">return</span> doSomethingElse();</span>
+<span class="line">&#125;).then(finalHandler);</span>
+</pre></td></tr></table></figure>
+<p>答案如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+</pre></td><td class="code"><pre><span class="line">doSomething</span>
+<span class="line">|-----------------|</span>
+<span class="line">                  doSomethingElse(undefined)</span>
+<span class="line">                  |------------------|</span>
+<span class="line">                                     finalHandler(resultOfDoSomethingElse)</span>
+<span class="line">                                     |------------------|</span>
+</pre></td></tr></table></figure>
+<h3 id="问题二"><a href="#问题二" class="headerlink" title="问题二"></a>问题二</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+</pre></td><td class="code"><pre><span class="line">doSomething().then(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">  doSomethingElse();</span>
+<span class="line">&#125;).then(finalHandler);</span>
+</pre></td></tr></table></figure>
+<p>答案如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+</pre></td><td class="code"><pre><span class="line">doSomething</span>
+<span class="line">|-----------------|</span>
+<span class="line">                  doSomethingElse(undefined)</span>
+<span class="line">                  |------------------|</span>
+<span class="line">                  finalHandler(undefined)</span>
+<span class="line">                  |------------------|</span>
+</pre></td></tr></table></figure>
+<h3 id="问题三"><a href="#问题三" class="headerlink" title="问题三"></a>问题三</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+</pre></td><td class="code"><pre><span class="line">doSomething().then(doSomethingElse())</span>
+<span class="line">  .then(finalHandler);</span>
+</pre></td></tr></table></figure>
+<p>答案如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+</pre></td><td class="code"><pre><span class="line">doSomething</span>
+<span class="line">|-----------------|</span>
+<span class="line">doSomethingElse(undefined)</span>
+<span class="line">|---------------------------------|</span>
+<span class="line">                  finalHandler(resultOfDoSomething)</span>
+<span class="line">                  |------------------|</span>
+</pre></td></tr></table></figure>
+<h3 id="问题四"><a href="#问题四" class="headerlink" title="问题四"></a>问题四</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+</pre></td><td class="code"><pre><span class="line">doSomething().then(doSomethingElse)</span>
+<span class="line">  .then(finalHandler);</span>
+</pre></td></tr></table></figure>
+<p>答案如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+</pre></td><td class="code"><pre><span class="line">doSomething</span>
+<span class="line">|-----------------|</span>
+<span class="line">                  doSomethingElse(resultOfDoSomething)</span>
+<span class="line">                  |------------------|</span>
+<span class="line">                                     finalHandler(resultOfDoSomethingElse)</span>
+<span class="line">                                     |------------------|</span>
+</pre></td></tr></table></figure></div><div class="tags"><a href="/tags/js/">js</a></div><div class="post-share"><div class="bdsharebuttonbox"><span style="float:left;line-height: 28px;height: 28px;font-size:16px;font-weight:blod">分享到：</span><a href="#" data-cmd="more" class="bds_more"></a><a href="#" data-cmd="mshare" title="分享到一键分享" class="bds_mshare"></a><a href="#" data-cmd="fbook" title="分享到Facebook" class="bds_fbook"></a><a href="#" data-cmd="twi" title="分享到Twitter" class="bds_twi"></a><a href="#" data-cmd="linkedin" title="分享到linkedin" class="bds_linkedin"></a><a href="#" data-cmd="youdao" title="分享到有道云笔记" class="bds_youdao"></a><a href="#" data-cmd="evernotecn" title="分享到印象笔记" class="bds_evernotecn"></a><a href="#" data-cmd="weixin" title="分享到微信" class="bds_weixin"></a><a href="#" data-cmd="qzone" title="分享到QQ空间" class="bds_qzone"></a><a href="#" data-cmd="tsina" title="分享到新浪微博" class="bds_tsina"></a></div></div><div class="post-nav"><a href="/2018/03/05/margin-collapse/" class="next">深入理解 margin collapse 及 BFC</a></div><div id="comments"><div id="SOHUCS" sid="2018/03/08/problem-with-promise/"></div></div></div></div></div><div class="layout-r"><div id="sidebar"><div class="search-pla"></div><div id="toc" class="widget"><div class="widget-title"><i class="fa fa-fei">文章目录</i></div><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#低级错误"><span class="toc-text">低级错误</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#错误-1：promise-调用地狱"><span class="toc-text">错误 1：promise 调用地狱</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#错误-2：在-promise-如何实用-forEach"><span class="toc-text">错误 2：在 promise 如何实用 forEach</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#错误-3：忘记添加-catch"><span class="toc-text">错误 3：忘记添加 .catch()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#错误-4：using-‘deferred’"><span class="toc-text">错误 4：using ‘deferred’</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#问题-5：using-side-effects-instead-of-returning"><span class="toc-text">问题 5：using side effects instead of returning</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#高级错误"><span class="toc-text">高级错误</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#问题-1：不知道-Promise-resolve"><span class="toc-text">问题 1：不知道 Promise.resolve()</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#问题-2：then-resolveHandler-catch-rejectHandler-不完全等同于-then-resolveHandler-rejectHandler"><span class="toc-text">问题 2：then(resolveHandler).catch(rejectHandler) 不完全等同于 then(resolveHandler, rejectHandler)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#问题-3：promises-对比-promise-工厂"><span class="toc-text">问题 3：promises 对比 promise 工厂</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#问题-4：怎么得到两个-promise-的返回值"><span class="toc-text">问题 4：怎么得到两个 promise 的返回值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#问题-5：promises-fall-through"><span class="toc-text">问题 5：promises fall through</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#揭秘时间"><span class="toc-text">揭秘时间</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#问题一"><span class="toc-text">问题一</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#问题二"><span class="toc-text">问题二</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#问题三"><span class="toc-text">问题三</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#问题四"><span class="toc-text">问题四</span></a></li></ol></li></ol></div><div class="widget"><div class="widget-title"><i class="fa fa-xie"> 最新文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/03/08/problem-with-promise/">problem with promise</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/05/margin-collapse/">深入理解 margin collapse 及 BFC</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/02/css伪类及伪元素/">css 伪类及伪元素</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/31/js-cookie/">js-cookie</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/26/deep-compare/">deep-compare</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/02/mongoose/">mongoose 简易教程</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/02/mongodb/">mongodb 数据库</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/27/tail/">tail 命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/26/dom-model/">dom 知识汇总</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/23/enable-mysite-https/">网站升级 HTTPS</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-gui"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/前端/">前端</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/文章/">文章</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网站/">网站</a><span class="category-list-count">1</span></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-biao"> 标签</i></div><div class="tagcloud"><a href="/tags/js/" style="font-size: 15px;">js</a> <a href="/tags/css/" style="font-size: 15px;">css</a> <a href="/tags/nginx/" style="font-size: 15px;">nginx</a> <a href="/tags/mongodb/" style="font-size: 15px;">mongodb</a> <a href="/tags/shell/" style="font-size: 15px;">shell</a> <a href="/tags/English/" style="font-size: 15px;">English</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-archive"> 归档</i></div><ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-you"> 友情链接</i></div><ul></ul><a href="http://www.newming.cn/" title="个人网站" target="_blank">个人网站</a><ul></ul><a href="https://github.com/newming" title="github" target="_blank">github</a><ul></ul><a href="https://coding.net/user" title="coding" target="_blank">coding</a></div></div></div></div><a id="totop" href="#top"></a><div id="footer"><div class="footer-info"><p><a href="/baidusitemap.xml">Baidu Site Haritası</a> |  <a href="/atom.xml">订阅</a> |  <a href="/about/">关于</a></p><p>本站总访问量：<i id="busuanzi_container_site_pv"><i id="busuanzi_value_site_pv"></i></i>次</p><p><span> Copyright &copy;<a href="/." rel="nofollow">Newming(钮旭明).</a></span><span> Theme by<a rel="nofollow" target="_blank" href="https://github.com/chaooo/hexo-theme-BlueLake"> BlueLake.</a></span><span> Count by<a href="http://busuanzi.ibruce.info/"> busuanzi.</a></span><span> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a></span></p></div></div></div><script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js" async></script><script type="text/javascript" src="/js/search.json.js?v=2.0.1"></script><script type="text/javascript" src="/js/toctotop.js?v=2.0.1" async></script><script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["mshare","weixin","tsina","qzone","linkedin","fbook","twi","print","renren","sqq","evernotecn","bdysc","tqq","tqf","bdxc","kaixin001","tieba","douban","bdhome","thx","ibaidu","meilishuo","mogujie","diandian","huaban","duitang","hx","fx","youdao","sdo","qingbiji","people","xinhua","mail","isohu","yaolan","wealink","ty","iguba","h163","copy"],"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["tsina","qzone","weixin","fbook","twi","linkedin","youdao","evernotecn","mshare"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["tsina","qzone","weixin","fbook","twi","linkedin","youdao","evernotecn","mshare"]}};with(document)0[(getElementsByTagName('head')[0]||head).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script><script>window._config = { showScore: true };
+(function(){ 
+  var appid = 'cytd93gvc'; 
+  var conf = '0cc7cd8ba422165ead18a54d72a4ea07'; 
+  var width = window.innerWidth || document.documentElement.clientWidth; 
+  var nodes =document.getElementsByTagName("head")[0]||document.head||document.documentElement;
+  if (/(Android|iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent) && width < 750) {  
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
+  }
+  else { 
+    var loadJs=function(d,a){
+      var b=document.createElement("script");b.setAttribute("type","text/javascript");
+      b.setAttribute("charset","UTF-8");
+      b.setAttribute("src",d);
+      if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}
+      nodes.appendChild(b)
+    };
+    loadJs("https://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})}); 
+  } 
+  var loadCss = function(cssString){  
+    var style=document.createElement("style");  
+    style.setAttribute("type", "text/css");  
+    if(style.styleSheet){// IE  
+        style.styleSheet.cssText = cssString;  
+    } else {// w3c  
+        var cssText = document.createTextNode(cssString);  
+        style.appendChild(cssText);  
+    }
+    nodes.appendChild(style);
+  }
+  window.onload=function(){loadCss('.module-hot-topic,.module-cmt-float-bar{display:none!important}#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w .wrap-action-w .cbox-prompt-w span.prompt-empty-w,#SOHUCS #SOHU_MAIN .module-cmt-float-bar .wrap-cont-w .cont-form-w .form-text-w span.text-null,#SOHUCS #SOHU_MAIN .module-cmt-float-bar .wrap-cont-w .cont-minwidth-w div.cont-comment-w a.comment-link-w,#SOHUCS #SOHU_MAIN .module-cmt-float-bar .wrap-cont-w .cont-minwidth-w div.cont-comment-w span.comment-text-w,#SOHUCS #SOHU_MAIN .module-cmt-footer .section-service-w div.service-wrap-w a:hover,#SOHUCS #SOHU_MAIN .module-cmt-header .section-cbox-w .block-head-w div.header-login,#SOHUCS #SOHU_MAIN .module-cmt-header .section-title-w .title-user-w .user-wrap-w span.wrap-name-w,#SOHUCS #SOHU_MAIN .module-cmt-list .action-click-gw span.click-disable-eg a em.icon-name-bg,#SOHUCS #SOHU_MAIN .module-cmt-list .block-title-gw ul li div.title-name-gw,#SOHUCS #SOHU_MAIN .module-cmt-list .cmt-list-type .cmt-list-number .comment-number span.cy-number,#SOHUCS #SOHU_MAIN .module-cmt-list .cmt-list-type .cmt-list-number span.comment-number,#SOHUCS #SOHU_MAIN .module-cmt-list .cmt-list-type .type-lists li.active,#SOHUCS #SOHU_MAIN .module-cmt-list .msg-wrap-gw .wrap-action-gw .action-click-gw span a:hover,#SOHUCS #SOHU_MAIN .module-cmt-list .picture-box-gw div.box-action-gw a:hover,#SOHUCS #SOHU_MAIN .module-cmt-list .wrap-action-gw .action-click-gw span a:hover em.icon-name-bg,#SOHUCS #SOHU_MAIN .module-cmt-list .wrap-user-gw span.user-name-gw a{color:#40759b!important}#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w .post-wrap-border-t div.post-wrap-border-t-r,#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w div.post-wrap-border-l,#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w div.post-wrap-border-r{display:none!important}#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w .post-wrap-border-t div.post-wrap-border-t-l{background:#FFF!important;top:-2px!important}#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w .wrap-action-w .action-function-w .uploading-wrapper-dw div.wrapper-image-dw,#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w div.post-wrap-main,#SOHUCS #SOHU_MAIN .module-cmt-float-bar .wrap-cont-w .cont-form-w div.form-text-w,#SOHUCS #SOHU_MAIN .module-cmt-header .section-cbox-w .block-head-w div.header-login,#SOHUCS #SOHU_MAIN .module-cmt-list .module-cmt-box .post-wrap-w div.post-wrap-main{border:1px solid #e6e6e6!important;border-radius:20px 20px 20px 20px;margin:0!important}#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w .wrap-action-w .action-issue-w .issue-btn-w a .btn-fw{width:130px!important;height:34px!important;line-height:33px!important;font-size:17px!important;background:#5483b1!important;border-radius:20px!important;color:#FFF!important;-webkit-box-shadow:0 -1px 4px #5483b1 inset;box-shadow:0 -1px 10px #5483b1 inset}#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w .wrap-action-w .action-issue-w .issue-btn-w a .btn-fw:before{content:"发表评论"}#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w .wrap-action-w .action-issue-w .issue-btn-w a:hover .btn-fw{color:#40759b!important;background:#FFF!important}#SOHUCS #SOHU_MAIN .module-cmt-list .cmt-list-type .type-lists li{background:none!important;border-bottom:1px solid #e6e6e6}#SOHUCS #SOHU_MAIN .module-cmt-list .cmt-list-type .type-lists li.active{border:1px solid #e6e6e6;border-radius:10px 10px 0 0;border-bottom:none}#SOHUCS #SOHU_MAIN .module-cmt-list .block-title-gw ul li .title-name-gw div.title-name-gw-tag{background:#5483b1!important;border-radius:3px}#SOHUCS #SOHU_MAIN .module-cmt-list .cmt-list-type div.cmt-list-border{background-color:#e6e6e6!important}#SOHUCS #SOHU_MAIN .module-cmt-notice ul.nt-list li.nt-item{border:1px solid #e6e6e6!important}#SOHUCS #SOHU_MAIN .module-cmt-notice ul.nt-list li.nt-item .nt-logo{text-align:center;line-height:40px;border-radius:50%!important;background:#e6e6e6!important}#SOHUCS #SOHU_MAIN .module-cmt-notice ul.nt-list li.nt-item .nt-logo:before{content:"畅";font-size:22px;color:#FFF}#SOHUCS #SOHU_MAIN .module-cmt-notice ul.nt-list li.nt-item a.nt-text,#SOHUCS #SOHU_MAIN .module-cmt-notice ul.nt-list li.nt-item a.nt-text i{color:#5483b1!important}#SOHUCS #SOHU_MAIN .module-cmt-header .section-title-w .title-user-w .user-wrap-w{background:#FFF!important}');};
+})();</script><script src="https://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script></body></html>

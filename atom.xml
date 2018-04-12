@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://newming.github.io/"/>
-  <updated>2018-03-10T02:42:16.186Z</updated>
+  <updated>2018-04-12T03:43:44.299Z</updated>
   <id>https://newming.github.io/</id>
   
   <author>
@@ -15,6 +15,32 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>阿里云 ECS 服务器基础配置</title>
+    <link href="https://newming.github.io/2018/04/12/ecs-handle/"/>
+    <id>https://newming.github.io/2018/04/12/ecs-handle/</id>
+    <published>2018-04-12T03:38:11.000Z</published>
+    <updated>2018-04-12T03:43:44.299Z</updated>
+    
+    <content type="html"><![CDATA[<p>最近新买了一台阿里云 ECS 服务器，系统为 Ubuntu 16.04，简单配置了下，之前也做过配置，零零碎碎，所以整理一下流程。</p><h2 id="登录服务器"><a href="#登录服务器" class="headerlink" title="登录服务器"></a>登录服务器</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">ssh root@ip</span></pre></td></tr></table></figure><h2 id="创建普通用户"><a href="#创建普通用户" class="headerlink" title="创建普通用户"></a>创建普通用户</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">adduser newming --ingroup sudo</span></pre></td></tr></table></figure><h2 id="配置免密登录"><a href="#配置免密登录" class="headerlink" title="配置免密登录"></a>配置免密登录</h2><p>将自己开发机的公钥拷贝到服务器上用户主目录 .ssh/authorized_keys 文件内</p><h2 id="更新系统"><a href="#更新系统" class="headerlink" title="更新系统"></a>更新系统</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><span class="line">2</span></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><span class="line">sudo apt-get upgrade</span></pre></td></tr></table></figure><h2 id="安装-git-和-curl"><a href="#安装-git-和-curl" class="headerlink" title="安装 git 和 curl"></a>安装 git 和 curl</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">sudo apt-get -y install git curl</span></pre></td></tr></table></figure><h2 id="解决中文乱码"><a href="#解决中文乱码" class="headerlink" title="解决中文乱码"></a>解决中文乱码</h2><p><a href="https://www.centos.bz/2017/12/%E8%A7%A3%E5%86%B3ubuntu%E7%9A%84%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%E9%97%AE%E9%A2%98/" target="_blank" rel="external">参考网站</a></p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><span class="line">2</span><span class="line">3</span><span class="line">4</span><span class="line">5</span><span class="line">6</span><span class="line">7</span><span class="line">8</span><span class="line">9</span><span class="line">10</span><span class="line">11</span><span class="line">12</span><span class="line">13</span><span class="line">14</span></pre></td><td class="code"><pre><span class="line">sudo apt-get install language-pack-zh-hans</span><span class="line"></span><span class="line"><span class="comment"># /etc/environment 添加</span></span><span class="line">LANG=<span class="string">"zh_CN.UTF-8"</span></span><span class="line">LANGUAGE=<span class="string">"zh_CN:zh:en_US:en"</span></span><span class="line"></span><span class="line"><span class="comment"># /var/lib/locales/supported.d/local 添加</span></span><span class="line">en_US.UTF-8 UTF-8</span><span class="line">zh_CN.UTF-8 UTF-8</span><span class="line">zh_CN.GBK GBK</span><span class="line">zh_CN GB2312</span><span class="line"></span><span class="line"><span class="comment"># 命令行执行</span></span><span class="line">sudo locale-gen</span></pre></td></tr></table></figure><h2 id="解决-sudo-unable-to-resolve-host-机器名"><a href="#解决-sudo-unable-to-resolve-host-机器名" class="headerlink" title="解决 sudo: unable to resolve host [机器名]"></a>解决 sudo: unable to resolve host [机器名]</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><span class="line">2</span></pre></td><td class="code"><pre><span class="line">sudo vi /etc/host</span><span class="line"><span class="comment"># 127.0.0.1 localhost [机器名]</span></span></pre></td></tr></table></figure><h2 id="安装-nginx"><a href="#安装-nginx" class="headerlink" title="安装 nginx"></a>安装 nginx</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><span class="line">2</span><span class="line">3</span></pre></td><td class="code"><pre><span class="line">sudo apt-get install nginx</span><span class="line"></span><span class="line">sudo service nginx start</span></pre></td></tr></table></figure><h2 id="修改-ssh-登录"><a href="#修改-ssh-登录" class="headerlink" title="修改 ssh 登录"></a>修改 ssh 登录</h2><p><a href="http://www.ruanyifeng.com/blog/2014/03/server_setup.html" target="_blank" rel="external">阮一峰文章</a></p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><span class="line">2</span><span class="line">3</span></pre></td><td class="code"><pre><span class="line">sudo vi /etc/ssh/sshd_config</span><span class="line">sudo service ssh restart</span><span class="line"><span class="comment"># 注意如果修改端口后请到阿里云配置安全组</span></span></pre></td></tr></table></figure><h2 id="修改服务器名称"><a href="#修改服务器名称" class="headerlink" title="修改服务器名称"></a>修改服务器名称</h2><p><a href="https://help.aliyun.com/knowledge_detail/41305.html" target="_blank" rel="external">阿里云帮助文档</a></p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">sudo vi /etc/hostname <span class="comment"># 重启后生效，注意修改 hosts</span></span></pre></td></tr></table></figure><h2 id="自动重启服务"><a href="#自动重启服务" class="headerlink" title="自动重启服务"></a>自动重启服务</h2><p>/etc/network/if-up.d</p><h2 id="mongodb"><a href="#mongodb" class="headerlink" title="mongodb"></a>mongodb</h2><p><a href="https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/" target="_blank" rel="external">mongodb 官网</a></p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><span class="line">2</span><span class="line">3</span><span class="line">4</span><span class="line">5</span><span class="line">6</span><span class="line">7</span><span class="line">8</span><span class="line">9</span></pre></td><td class="code"><pre><span class="line">sudo service mongod start</span><span class="line"></span><span class="line">sudo service mongod restart</span><span class="line"></span><span class="line">sudo service mongod stop</span><span class="line"></span><span class="line">cat /var/<span class="built_in">log</span>/mongodb/mongod.log</span><span class="line"></span><span class="line">sudo vi /etc/mongod.conf</span></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;最近新买了一台阿里云 ECS 服务器，系统为 Ubuntu 16.04，简单配置了下，之前也做过配置，零零碎碎，所以整理一下流程。&lt;/p&gt;
+&lt;h2 id=&quot;登录服务器&quot;&gt;&lt;a href=&quot;#登录服务器&quot; class=&quot;headerlink&quot; title=&quot;登录服务器&quot;&gt;&lt;/
+      
+    
+    </summary>
+    
+      <category term="网站" scheme="https://newming.github.io/categories/%E7%BD%91%E7%AB%99/"/>
+    
+    
+      <category term="ubuntu" scheme="https://newming.github.io/tags/ubuntu/"/>
+    
+  </entry>
   
   <entry>
     <title>problem with promise</title>

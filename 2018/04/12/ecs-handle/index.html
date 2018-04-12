@@ -1,0 +1,129 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="Newming(钮旭明) 的个人博客笔记文档，Newming(钮旭明) 的前端笔记，Newming(钮旭明) 的前端博客文章"><title>阿里云 ECS 服务器基础配置 | 前端资源部</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=2.0.1"><link rel="stylesheet" type="text/css" href="/css/highlight.css?v=2.0.1"><link rel="Shortcut Icon" href="/favicon.ico"><link rel="bookmark" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?ad4570b1386e79a9e6a7ec30f923e06d";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();</script></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">阿里云 ECS 服务器基础配置</h1><a id="logo" href="/.">前端资源部</a><p class="description">Newming(钮旭明) 的前端笔记</p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div><div id="search-form"><div id="result-mask" class="hide"></div><label><input id="search-key" type="text" autocomplete="off" placeholder="Newming"></label><div id="result-wrap" class="hide"><div id="search-result"></div></div><div class="hide"><template id="search-tpl"><div class="item"><a href="/{path}" title="{title}"><div class="title">{title}</div><div class="time">{date}</div><div class="tags">{tags}</div></a></div></template></div></div></div><div id="layout" class="layout-g"><div class="layout-l"><div class="content_container"><div class="post"><h1 class="post-title">阿里云 ECS 服务器基础配置</h1><div class="post-meta"><a href="/2018/04/12/ecs-handle/#comments" class="comment-count"><i id="changyan_count_unit" data-xid="2018/04/12/ecs-handle/"></i>留言,<i id="changyan_parti_unit" data-xid="2018/04/12/ecs-handle/"></i>参与</a><p><span class="date">Apr 12, 2018</span><span><a href="/categories/网站/" class="category">网站</a></span><span><i id="busuanzi_container_page_pv"><i id="busuanzi_value_page_pv"></i><i>点击</i></i></span></p></div><div class="post-content"><p>最近新买了一台阿里云 ECS 服务器，系统为 Ubuntu 16.04，简单配置了下，之前也做过配置，零零碎碎，所以整理一下流程。</p>
+<h2 id="登录服务器"><a href="#登录服务器" class="headerlink" title="登录服务器"></a>登录服务器</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span>
+</pre></td><td class="code"><pre><span class="line">ssh root@ip</span>
+</pre></td></tr></table></figure>
+<h2 id="创建普通用户"><a href="#创建普通用户" class="headerlink" title="创建普通用户"></a>创建普通用户</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span>
+</pre></td><td class="code"><pre><span class="line">adduser newming --ingroup sudo</span>
+</pre></td></tr></table></figure>
+<h2 id="配置免密登录"><a href="#配置免密登录" class="headerlink" title="配置免密登录"></a>配置免密登录</h2><p>将自己开发机的公钥拷贝到服务器上用户主目录 .ssh/authorized_keys 文件内</p>
+<h2 id="更新系统"><a href="#更新系统" class="headerlink" title="更新系统"></a>更新系统</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+</pre></td><td class="code"><pre><span class="line">sudo apt-get update</span>
+<span class="line">sudo apt-get upgrade</span>
+</pre></td></tr></table></figure>
+<h2 id="安装-git-和-curl"><a href="#安装-git-和-curl" class="headerlink" title="安装 git 和 curl"></a>安装 git 和 curl</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span>
+</pre></td><td class="code"><pre><span class="line">sudo apt-get -y install git curl</span>
+</pre></td></tr></table></figure>
+<h2 id="解决中文乱码"><a href="#解决中文乱码" class="headerlink" title="解决中文乱码"></a>解决中文乱码</h2><p><a href="https://www.centos.bz/2017/12/%E8%A7%A3%E5%86%B3ubuntu%E7%9A%84%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%E9%97%AE%E9%A2%98/" target="_blank" rel="external">参考网站</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+<span class="line">7</span>
+<span class="line">8</span>
+<span class="line">9</span>
+<span class="line">10</span>
+<span class="line">11</span>
+<span class="line">12</span>
+<span class="line">13</span>
+<span class="line">14</span>
+</pre></td><td class="code"><pre><span class="line">sudo apt-get install language-pack-zh-hans</span>
+<span class="line"></span>
+<span class="line"><span class="comment"># /etc/environment 添加</span></span>
+<span class="line">LANG=<span class="string">"zh_CN.UTF-8"</span></span>
+<span class="line">LANGUAGE=<span class="string">"zh_CN:zh:en_US:en"</span></span>
+<span class="line"></span>
+<span class="line"><span class="comment"># /var/lib/locales/supported.d/local 添加</span></span>
+<span class="line">en_US.UTF-8 UTF-8</span>
+<span class="line">zh_CN.UTF-8 UTF-8</span>
+<span class="line">zh_CN.GBK GBK</span>
+<span class="line">zh_CN GB2312</span>
+<span class="line"></span>
+<span class="line"><span class="comment"># 命令行执行</span></span>
+<span class="line">sudo locale-gen</span>
+</pre></td></tr></table></figure>
+<h2 id="解决-sudo-unable-to-resolve-host-机器名"><a href="#解决-sudo-unable-to-resolve-host-机器名" class="headerlink" title="解决 sudo: unable to resolve host [机器名]"></a>解决 sudo: unable to resolve host [机器名]</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+</pre></td><td class="code"><pre><span class="line">sudo vi /etc/host</span>
+<span class="line"><span class="comment"># 127.0.0.1 localhost [机器名]</span></span>
+</pre></td></tr></table></figure>
+<h2 id="安装-nginx"><a href="#安装-nginx" class="headerlink" title="安装 nginx"></a>安装 nginx</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+</pre></td><td class="code"><pre><span class="line">sudo apt-get install nginx</span>
+<span class="line"></span>
+<span class="line">sudo service nginx start</span>
+</pre></td></tr></table></figure>
+<h2 id="修改-ssh-登录"><a href="#修改-ssh-登录" class="headerlink" title="修改 ssh 登录"></a>修改 ssh 登录</h2><p><a href="http://www.ruanyifeng.com/blog/2014/03/server_setup.html" target="_blank" rel="external">阮一峰文章</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+</pre></td><td class="code"><pre><span class="line">sudo vi /etc/ssh/sshd_config</span>
+<span class="line">sudo service ssh restart</span>
+<span class="line"><span class="comment"># 注意如果修改端口后请到阿里云配置安全组</span></span>
+</pre></td></tr></table></figure>
+<h2 id="修改服务器名称"><a href="#修改服务器名称" class="headerlink" title="修改服务器名称"></a>修改服务器名称</h2><p><a href="https://help.aliyun.com/knowledge_detail/41305.html" target="_blank" rel="external">阿里云帮助文档</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span>
+</pre></td><td class="code"><pre><span class="line">sudo vi /etc/hostname <span class="comment"># 重启后生效，注意修改 hosts</span></span>
+</pre></td></tr></table></figure>
+<h2 id="自动重启服务"><a href="#自动重启服务" class="headerlink" title="自动重启服务"></a>自动重启服务</h2><p>/etc/network/if-up.d</p>
+<h2 id="mongodb"><a href="#mongodb" class="headerlink" title="mongodb"></a>mongodb</h2><p><a href="https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/" target="_blank" rel="external">mongodb 官网</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+<span class="line">7</span>
+<span class="line">8</span>
+<span class="line">9</span>
+</pre></td><td class="code"><pre><span class="line">sudo service mongod start</span>
+<span class="line"></span>
+<span class="line">sudo service mongod restart</span>
+<span class="line"></span>
+<span class="line">sudo service mongod stop</span>
+<span class="line"></span>
+<span class="line">cat /var/<span class="built_in">log</span>/mongodb/mongod.log</span>
+<span class="line"></span>
+<span class="line">sudo vi /etc/mongod.conf</span>
+</pre></td></tr></table></figure></div><div class="tags"><a href="/tags/ubuntu/">ubuntu</a></div><div class="post-share"><div class="bdsharebuttonbox"><span style="float:left;line-height: 28px;height: 28px;font-size:16px;font-weight:blod">分享到：</span><a href="#" data-cmd="more" class="bds_more"></a><a href="#" data-cmd="mshare" title="分享到一键分享" class="bds_mshare"></a><a href="#" data-cmd="fbook" title="分享到Facebook" class="bds_fbook"></a><a href="#" data-cmd="twi" title="分享到Twitter" class="bds_twi"></a><a href="#" data-cmd="linkedin" title="分享到linkedin" class="bds_linkedin"></a><a href="#" data-cmd="youdao" title="分享到有道云笔记" class="bds_youdao"></a><a href="#" data-cmd="evernotecn" title="分享到印象笔记" class="bds_evernotecn"></a><a href="#" data-cmd="weixin" title="分享到微信" class="bds_weixin"></a><a href="#" data-cmd="qzone" title="分享到QQ空间" class="bds_qzone"></a><a href="#" data-cmd="tsina" title="分享到新浪微博" class="bds_tsina"></a></div></div><div class="post-nav"><a href="/2018/03/08/problem-with-promise/" class="next">problem with promise</a></div><div id="comments"><div id="SOHUCS" sid="2018/04/12/ecs-handle/"></div></div></div></div></div><div class="layout-r"><div id="sidebar"><div class="search-pla"></div><div id="toc" class="widget"><div class="widget-title"><i class="fa fa-fei">文章目录</i></div><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#登录服务器"><span class="toc-text">登录服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#创建普通用户"><span class="toc-text">创建普通用户</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#配置免密登录"><span class="toc-text">配置免密登录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#更新系统"><span class="toc-text">更新系统</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安装-git-和-curl"><span class="toc-text">安装 git 和 curl</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解决中文乱码"><span class="toc-text">解决中文乱码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#解决-sudo-unable-to-resolve-host-机器名"><span class="toc-text">解决 sudo: unable to resolve host [机器名]</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安装-nginx"><span class="toc-text">安装 nginx</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#修改-ssh-登录"><span class="toc-text">修改 ssh 登录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#修改服务器名称"><span class="toc-text">修改服务器名称</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#自动重启服务"><span class="toc-text">自动重启服务</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#mongodb"><span class="toc-text">mongodb</span></a></li></ol></div><div class="widget"><div class="widget-title"><i class="fa fa-xie"> 最新文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/04/12/ecs-handle/">阿里云 ECS 服务器基础配置</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/08/problem-with-promise/">problem with promise</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/05/margin-collapse/">深入理解 margin collapse 及 BFC</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/02/css伪类及伪元素/">css 伪类及伪元素</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/31/js-cookie/">js-cookie</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/26/deep-compare/">deep-compare</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/02/mongoose/">mongoose 简易教程</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/02/mongodb/">mongodb 数据库</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/27/tail/">tail 命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/26/dom-model/">dom 知识汇总</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-gui"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/前端/">前端</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/文章/">文章</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网站/">网站</a><span class="category-list-count">2</span></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-biao"> 标签</i></div><div class="tagcloud"><a href="/tags/js/" style="font-size: 15px;">js</a> <a href="/tags/css/" style="font-size: 15px;">css</a> <a href="/tags/ubuntu/" style="font-size: 15px;">ubuntu</a> <a href="/tags/nginx/" style="font-size: 15px;">nginx</a> <a href="/tags/mongodb/" style="font-size: 15px;">mongodb</a> <a href="/tags/shell/" style="font-size: 15px;">shell</a> <a href="/tags/English/" style="font-size: 15px;">English</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-archive"> 归档</i></div><ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-you"> 友情链接</i></div><ul></ul><a href="https://sanii.cn" title="San Blog" target="_blank">San Blog</a></div></div></div></div><a id="totop" href="#top"></a><div id="footer"><div class="footer-info"><p><a href="/baidusitemap.xml">Baidu Site Haritası</a> |  <a href="/atom.xml">订阅</a> |  <a href="/about/">关于</a></p><p>本站总访问量：<i id="busuanzi_container_site_pv"><i id="busuanzi_value_site_pv"></i></i>次</p><p><span> Copyright &copy;<a href="/." rel="nofollow">Newming(钮旭明).</a></span><span> Theme by<a rel="nofollow" target="_blank" href="https://github.com/chaooo/hexo-theme-BlueLake"> BlueLake.</a></span><span> Count by<a href="http://busuanzi.ibruce.info/"> busuanzi.</a></span><span> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a></span></p></div></div></div><script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js" async></script><script type="text/javascript" src="/js/search.json.js?v=2.0.1"></script><script type="text/javascript" src="/js/toctotop.js?v=2.0.1" async></script><script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["mshare","weixin","tsina","qzone","linkedin","fbook","twi","print","renren","sqq","evernotecn","bdysc","tqq","tqf","bdxc","kaixin001","tieba","douban","bdhome","thx","ibaidu","meilishuo","mogujie","diandian","huaban","duitang","hx","fx","youdao","sdo","qingbiji","people","xinhua","mail","isohu","yaolan","wealink","ty","iguba","h163","copy"],"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["tsina","qzone","weixin","fbook","twi","linkedin","youdao","evernotecn","mshare"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["tsina","qzone","weixin","fbook","twi","linkedin","youdao","evernotecn","mshare"]}};with(document)0[(getElementsByTagName('head')[0]||head).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script><script>window._config = { showScore: true };
+(function(){ 
+  var appid = 'cytd9dYiO'; 
+  var conf = 'prod_22b7a93926c43ba524212e070eb5c5fa'; 
+  var width = window.innerWidth || document.documentElement.clientWidth; 
+  var nodes =document.getElementsByTagName("head")[0]||document.head||document.documentElement;
+  if (/(Android|iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent) && width < 750) {  
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="http://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
+  }
+  else { 
+    var loadJs=function(d,a){
+      var b=document.createElement("script");b.setAttribute("type","text/javascript");
+      b.setAttribute("charset","UTF-8");
+      b.setAttribute("src",d);
+      if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}
+      nodes.appendChild(b)
+    };
+    loadJs("http://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})}); 
+  } 
+  var loadCss = function(cssString){  
+    var style=document.createElement("style");  
+    style.setAttribute("type", "text/css");  
+    if(style.styleSheet){// IE  
+        style.styleSheet.cssText = cssString;  
+    } else {// w3c  
+        var cssText = document.createTextNode(cssString);  
+        style.appendChild(cssText);  
+    }
+    nodes.appendChild(style);
+  }
+  window.onload=function(){loadCss('.module-hot-topic,.module-cmt-float-bar{display:none!important}#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w .wrap-action-w .cbox-prompt-w span.prompt-empty-w,#SOHUCS #SOHU_MAIN .module-cmt-float-bar .wrap-cont-w .cont-form-w .form-text-w span.text-null,#SOHUCS #SOHU_MAIN .module-cmt-float-bar .wrap-cont-w .cont-minwidth-w div.cont-comment-w a.comment-link-w,#SOHUCS #SOHU_MAIN .module-cmt-float-bar .wrap-cont-w .cont-minwidth-w div.cont-comment-w span.comment-text-w,#SOHUCS #SOHU_MAIN .module-cmt-footer .section-service-w div.service-wrap-w a:hover,#SOHUCS #SOHU_MAIN .module-cmt-header .section-cbox-w .block-head-w div.header-login,#SOHUCS #SOHU_MAIN .module-cmt-header .section-title-w .title-user-w .user-wrap-w span.wrap-name-w,#SOHUCS #SOHU_MAIN .module-cmt-list .action-click-gw span.click-disable-eg a em.icon-name-bg,#SOHUCS #SOHU_MAIN .module-cmt-list .block-title-gw ul li div.title-name-gw,#SOHUCS #SOHU_MAIN .module-cmt-list .cmt-list-type .cmt-list-number .comment-number span.cy-number,#SOHUCS #SOHU_MAIN .module-cmt-list .cmt-list-type .cmt-list-number span.comment-number,#SOHUCS #SOHU_MAIN .module-cmt-list .cmt-list-type .type-lists li.active,#SOHUCS #SOHU_MAIN .module-cmt-list .msg-wrap-gw .wrap-action-gw .action-click-gw span a:hover,#SOHUCS #SOHU_MAIN .module-cmt-list .picture-box-gw div.box-action-gw a:hover,#SOHUCS #SOHU_MAIN .module-cmt-list .wrap-action-gw .action-click-gw span a:hover em.icon-name-bg,#SOHUCS #SOHU_MAIN .module-cmt-list .wrap-user-gw span.user-name-gw a{color:#40759b!important}#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w .post-wrap-border-t div.post-wrap-border-t-r,#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w div.post-wrap-border-l,#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w div.post-wrap-border-r{display:none!important}#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w .post-wrap-border-t div.post-wrap-border-t-l{background:#FFF!important;top:-2px!important}#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w .wrap-action-w .action-function-w .uploading-wrapper-dw div.wrapper-image-dw,#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w div.post-wrap-main,#SOHUCS #SOHU_MAIN .module-cmt-float-bar .wrap-cont-w .cont-form-w div.form-text-w,#SOHUCS #SOHU_MAIN .module-cmt-header .section-cbox-w .block-head-w div.header-login,#SOHUCS #SOHU_MAIN .module-cmt-list .module-cmt-box .post-wrap-w div.post-wrap-main{border:1px solid #e6e6e6!important;border-radius:20px 20px 20px 20px;margin:0!important}#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w .wrap-action-w .action-issue-w .issue-btn-w a .btn-fw{width:130px!important;height:34px!important;line-height:33px!important;font-size:17px!important;background:#5483b1!important;border-radius:20px!important;color:#FFF!important;-webkit-box-shadow:0 -1px 4px #5483b1 inset;box-shadow:0 -1px 10px #5483b1 inset}#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w .wrap-action-w .action-issue-w .issue-btn-w a .btn-fw:before{content:"发表评论"}#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w .wrap-action-w .action-issue-w .issue-btn-w a:hover .btn-fw{color:#40759b!important;background:#FFF!important}#SOHUCS #SOHU_MAIN .module-cmt-list .cmt-list-type .type-lists li{background:none!important;border-bottom:1px solid #e6e6e6}#SOHUCS #SOHU_MAIN .module-cmt-list .cmt-list-type .type-lists li.active{border:1px solid #e6e6e6;border-radius:10px 10px 0 0;border-bottom:none}#SOHUCS #SOHU_MAIN .module-cmt-list .block-title-gw ul li .title-name-gw div.title-name-gw-tag{background:#5483b1!important;border-radius:3px}#SOHUCS #SOHU_MAIN .module-cmt-list .cmt-list-type div.cmt-list-border{background-color:#e6e6e6!important}#SOHUCS #SOHU_MAIN .module-cmt-notice ul.nt-list li.nt-item{border:1px solid #e6e6e6!important}#SOHUCS #SOHU_MAIN .module-cmt-notice ul.nt-list li.nt-item .nt-logo{text-align:center;line-height:40px;border-radius:50%!important;background:#e6e6e6!important}#SOHUCS #SOHU_MAIN .module-cmt-notice ul.nt-list li.nt-item .nt-logo:before{content:"畅";font-size:22px;color:#FFF}#SOHUCS #SOHU_MAIN .module-cmt-notice ul.nt-list li.nt-item a.nt-text,#SOHUCS #SOHU_MAIN .module-cmt-notice ul.nt-list li.nt-item a.nt-text i{color:#5483b1!important}#SOHUCS #SOHU_MAIN .module-cmt-header .section-title-w .title-user-w .user-wrap-w{background:#FFF!important}');};
+})();</script><script src="http://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script></body></html>

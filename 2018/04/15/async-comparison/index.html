@@ -1,0 +1,170 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="Newming(钮旭明) 的个人博客笔记文档，Newming(钮旭明) 的前端笔记，Newming(钮旭明) 的前端博客文章"><title>五种异步实现方式对比 | 前端资源部</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=2.0.1"><link rel="stylesheet" type="text/css" href="/css/highlight.css?v=2.0.1"><link rel="Shortcut Icon" href="/favicon.ico"><link rel="bookmark" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?ad4570b1386e79a9e6a7ec30f923e06d";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();</script></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">五种异步实现方式对比</h1><a id="logo" href="/.">前端资源部</a><p class="description">Newming(钮旭明) 的前端笔记</p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div><div id="search-form"><div id="result-mask" class="hide"></div><label><input id="search-key" type="text" autocomplete="off" placeholder="Newming"></label><div id="result-wrap" class="hide"><div id="search-result"></div></div><div class="hide"><template id="search-tpl"><div class="item"><a href="/{path}" title="{title}"><div class="title">{title}</div><div class="time">{date}</div><div class="tags">{tags}</div></a></div></template></div></div></div><div id="layout" class="layout-g"><div class="layout-l"><div class="content_container"><div class="post"><h1 class="post-title">五种异步实现方式对比</h1><div class="post-meta"><a href="/2018/04/15/async-comparison/#comments" class="comment-count"><i id="changyan_count_unit" data-xid="2018/04/15/async-comparison/"></i>留言,<i id="changyan_parti_unit" data-xid="2018/04/15/async-comparison/"></i>参与</a><p><span class="date">Apr 15, 2018</span><span><a href="/categories/前端/" class="category">前端</a></span><span><i id="busuanzi_container_page_pv"><i id="busuanzi_value_page_pv"></i><i>点击</i></i></span></p></div><div class="post-content"><p>最近研究了一下 koa1 和 koa2 的源码，其中比较重要的就是中间件的流程控制，其中 koa1 是通过 generator 实现中间件流程控制，koa2 则是通过 async 函数，说起来利用 js 实现异步流程控制的方法也不少了，所以做一下总结对比。主要总结了五种实现方式：</p>
+<ul>
+<li>callback</li>
+<li>promise</li>
+<li>async</li>
+<li>thunk 版 generator</li>
+<li>promise 版 generator</li>
+</ul>
+<p>具体代码可以看<a href="https://codepen.io/newming/pen/wmPejP" target="_blank" rel="external">我在 codepen 上的 demo</a>，分别打开各方法注释即可。</p>
+<p></p><p data-height="265" data-theme-id="0" data-slug-hash="wmPejP" data-default-tab="js,result" data-user="newming" data-embed-version="2" data-pen-title="async" class="codepen">See the Pen <a href="https://codepen.io/newming/pen/wmPejP/" target="_blank" rel="external">async</a> by newming (<a href="https://codepen.io/newming" target="_blank" rel="external">@newming</a>) on <a href="https://codepen.io" target="_blank" rel="external">CodePen</a>.</p><p></p>
+<script async src="https://static.codepen.io/assets/embed/ei.js"></script>
+
+<p>下面简单看一下最终各中方式实现代码：</p>
+<h3 id="callback"><a href="#callback" class="headerlink" title="callback"></a>callback</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+<span class="line">7</span>
+<span class="line">8</span>
+<span class="line">9</span>
+<span class="line">10</span>
+<span class="line">11</span>
+<span class="line">12</span>
+<span class="line">13</span>
+</pre></td><td class="code"><pre><span class="line">animate(ball1, <span class="number">100</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">  animate(ball2, <span class="number">200</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">    animate(ball3, <span class="number">300</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">      animate(ball3, <span class="number">150</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">        animate(ball2, <span class="number">150</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">          animate(ball1, <span class="number">150</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line"></span>
+<span class="line">          &#125;)</span>
+<span class="line">        &#125;)</span>
+<span class="line">      &#125;)</span>
+<span class="line">    &#125;)</span>
+<span class="line">  &#125;)</span>
+<span class="line">&#125;)</span>
+</pre></td></tr></table></figure>
+<h3 id="promise"><a href="#promise" class="headerlink" title="promise"></a>promise</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+<span class="line">7</span>
+<span class="line">8</span>
+<span class="line">9</span>
+<span class="line">10</span>
+<span class="line">11</span>
+<span class="line">12</span>
+<span class="line">13</span>
+<span class="line">14</span>
+<span class="line">15</span>
+<span class="line">16</span>
+</pre></td><td class="code"><pre><span class="line">promiseAnimate(ball1,<span class="number">100</span>)</span>
+<span class="line">  .then(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">    <span class="keyword">return</span> promiseAnimate(ball2,<span class="number">200</span>)</span>
+<span class="line">  &#125;)</span>
+<span class="line">  .then(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">    <span class="keyword">return</span> promiseAnimate(ball3,<span class="number">300</span>)</span>
+<span class="line">  &#125;)</span>
+<span class="line">  .then(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">    <span class="keyword">return</span> promiseAnimate(ball3,<span class="number">150</span>)</span>
+<span class="line">  &#125;)</span>
+<span class="line">  .then(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">    <span class="keyword">return</span> promiseAnimate(ball2,<span class="number">150</span>)</span>
+<span class="line">  &#125;)</span>
+<span class="line">  .then(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">    <span class="keyword">return</span> promiseAnimate(ball1,<span class="number">150</span>)</span>
+<span class="line">  &#125;)</span>
+</pre></td></tr></table></figure>
+<h3 id="async"><a href="#async" class="headerlink" title="async"></a>async</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+<span class="line">7</span>
+</pre></td><td class="code"><pre><span class="line">(<span class="keyword">async</span> <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span>
+<span class="line">  <span class="keyword">await</span> promiseAnimate(ball1, <span class="number">100</span>)</span>
+<span class="line">  <span class="keyword">await</span> promiseAnimate(ball2, <span class="number">200</span>)</span>
+<span class="line">  <span class="keyword">await</span> promiseAnimate(ball3,<span class="number">150</span>)</span>
+<span class="line">  <span class="keyword">await</span> promiseAnimate(ball2,<span class="number">150</span>)</span>
+<span class="line">  <span class="keyword">await</span> promiseAnimate(ball1,<span class="number">150</span>)</span>
+<span class="line">&#125;)()</span>
+</pre></td></tr></table></figure>
+<h3 id="基于-promise-的-generator-实现"><a href="#基于-promise-的-generator-实现" class="headerlink" title="基于 promise 的 generator 实现"></a>基于 promise 的 generator 实现</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+<span class="line">7</span>
+<span class="line">8</span>
+</pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> movePromise = <span class="function"><span class="keyword">function</span>* (<span class="params"></span>)</span>&#123;</span>
+<span class="line">  <span class="keyword">yield</span> promiseAnimate(ball1, <span class="number">100</span>);</span>
+<span class="line">  <span class="keyword">yield</span> promiseAnimate(ball2, <span class="number">200</span>);</span>
+<span class="line">  <span class="keyword">yield</span> promiseAnimate(ball3, <span class="number">150</span>);</span>
+<span class="line">  <span class="keyword">yield</span> promiseAnimate(ball2, <span class="number">150</span>);</span>
+<span class="line">  <span class="keyword">yield</span> promiseAnimate(ball1, <span class="number">150</span>);</span>
+<span class="line">&#125;;</span>
+<span class="line">run(movemovePromise) <span class="comment">// 需要自己实现 run 函数</span></span>
+</pre></td></tr></table></figure>
+<h3 id="基于-thunk-的-generator-实现"><a href="#基于-thunk-的-generator-实现" class="headerlink" title="基于 thunk 的 generator 实现"></a>基于 thunk 的 generator 实现</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span>
+<span class="line">2</span>
+<span class="line">3</span>
+<span class="line">4</span>
+<span class="line">5</span>
+<span class="line">6</span>
+<span class="line">7</span>
+<span class="line">8</span>
+<span class="line">9</span>
+</pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> moveThunk = <span class="function"><span class="keyword">function</span>* (<span class="params"></span>)</span>&#123;</span>
+<span class="line">  <span class="keyword">yield</span> animateThunk(ball1, <span class="number">100</span>)</span>
+<span class="line">  <span class="keyword">yield</span> animateThunk(ball2, <span class="number">200</span>)</span>
+<span class="line">  <span class="keyword">yield</span> animateThunk(ball3, <span class="number">150</span>)</span>
+<span class="line">  <span class="keyword">yield</span> animateThunk(ball2, <span class="number">150</span>)</span>
+<span class="line">  <span class="keyword">yield</span> animateThunk(ball1, <span class="number">150</span>)</span>
+<span class="line">&#125;;</span>
+<span class="line"></span>
+<span class="line">run(moveThunk) <span class="comment">// 同样需要自己 run 函数</span></span>
+</pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>callback 写法最不直观，当有多个连续执行异步操作任务时，容易造成回调地狱。其余四种都是同步写法实现异步流程控制，其中 async 函数相当于自动执行的 Promise 以及后边的 generator 函数，如果使用 generator，需要自己实现一个 run 函数来进行自动化执行，这里就要提到著名的 co 库。总的来说还是 async 不错。</p>
+<p>另外，能力有限，可能存在表达错误。另外具体各种方法实现，这里不做详细说明，可以参考下边提到的参考文章。</p>
+<p>参考文章：</p>
+<ul>
+<li><a href="http://es6.ruanyifeng.com/#docs/generator-async" target="_blank" rel="external">阮一峰 es6 入门</a></li>
+<li><a href="http://purplebamboo.github.io/2015/01/16/koa-source-analytics-4/" target="_blank" rel="external">purplebamboo blog</a></li>
+</ul>
+</div><div class="tags"><a href="/tags/js/">js</a></div><div class="post-share"><div class="bdsharebuttonbox"><span style="float:left;line-height: 28px;height: 28px;font-size:16px;font-weight:blod">分享到：</span><a href="#" data-cmd="more" class="bds_more"></a><a href="#" data-cmd="mshare" title="分享到一键分享" class="bds_mshare"></a><a href="#" data-cmd="fbook" title="分享到Facebook" class="bds_fbook"></a><a href="#" data-cmd="twi" title="分享到Twitter" class="bds_twi"></a><a href="#" data-cmd="linkedin" title="分享到linkedin" class="bds_linkedin"></a><a href="#" data-cmd="youdao" title="分享到有道云笔记" class="bds_youdao"></a><a href="#" data-cmd="evernotecn" title="分享到印象笔记" class="bds_evernotecn"></a><a href="#" data-cmd="weixin" title="分享到微信" class="bds_weixin"></a><a href="#" data-cmd="qzone" title="分享到QQ空间" class="bds_qzone"></a><a href="#" data-cmd="tsina" title="分享到新浪微博" class="bds_tsina"></a></div></div><div class="post-nav"><a href="/2018/04/12/ecs-handle/" class="next">阿里云 ECS 服务器基础配置</a></div><div id="comments"><div id="SOHUCS" sid="2018/04/15/async-comparison/"></div></div></div></div></div><div class="layout-r"><div id="sidebar"><div class="search-pla"></div><div id="toc" class="widget"><div class="widget-title"><i class="fa fa-fei">文章目录</i></div><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#callback"><span class="toc-text">callback</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#promise"><span class="toc-text">promise</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#async"><span class="toc-text">async</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#基于-promise-的-generator-实现"><span class="toc-text">基于 promise 的 generator 实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#基于-thunk-的-generator-实现"><span class="toc-text">基于 thunk 的 generator 实现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-text">总结</span></a></div><div class="widget"><div class="widget-title"><i class="fa fa-xie"> 最新文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2018/04/15/async-comparison/">五种异步实现方式对比</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/12/ecs-handle/">阿里云 ECS 服务器基础配置</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/08/problem-with-promise/">problem with promise</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/05/margin-collapse/">深入理解 margin collapse 及 BFC</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/02/css伪类及伪元素/">css 伪类及伪元素</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/31/js-cookie/">js-cookie</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/26/deep-compare/">deep-compare</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/02/mongoose/">mongoose 简易教程</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/02/mongodb/">mongodb 数据库</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/12/27/tail/">tail 命令</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-gui"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/shell/">shell</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/前端/">前端</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/文章/">文章</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/网站/">网站</a><span class="category-list-count">2</span></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-biao"> 标签</i></div><div class="tagcloud"><a href="/tags/js/" style="font-size: 15px;">js</a> <a href="/tags/css/" style="font-size: 15px;">css</a> <a href="/tags/ubuntu/" style="font-size: 15px;">ubuntu</a> <a href="/tags/nginx/" style="font-size: 15px;">nginx</a> <a href="/tags/mongodb/" style="font-size: 15px;">mongodb</a> <a href="/tags/shell/" style="font-size: 15px;">shell</a> <a href="/tags/English/" style="font-size: 15px;">English</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-archive"> 归档</i></div><ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">四月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/03/">三月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/01/">一月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">十二月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-you"> 友情链接</i></div><ul></ul><a href="https://sanii.cn" title="San Blog" target="_blank">San Blog</a></div></div></div></div><a id="totop" href="#top"></a><div id="footer"><div class="footer-info"><p><a href="/baidusitemap.xml">Baidu Site Haritası</a> |  <a href="/atom.xml">订阅</a> |  <a href="/about/">关于</a></p><p>本站总访问量：<i id="busuanzi_container_site_pv"><i id="busuanzi_value_site_pv"></i></i>次</p><p><span> Copyright &copy;<a href="/." rel="nofollow">Newming(钮旭明).</a></span><span> Theme by<a rel="nofollow" target="_blank" href="https://github.com/chaooo/hexo-theme-BlueLake"> BlueLake.</a></span><span> Count by<a href="http://busuanzi.ibruce.info/"> busuanzi.</a></span><span> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a></span></p></div></div></div><script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js" async></script><script type="text/javascript" src="/js/search.json.js?v=2.0.1"></script><script type="text/javascript" src="/js/toctotop.js?v=2.0.1" async></script><script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":["mshare","weixin","tsina","qzone","linkedin","fbook","twi","print","renren","sqq","evernotecn","bdysc","tqq","tqf","bdxc","kaixin001","tieba","douban","bdhome","thx","ibaidu","meilishuo","mogujie","diandian","huaban","duitang","hx","fx","youdao","sdo","qingbiji","people","xinhua","mail","isohu","yaolan","wealink","ty","iguba","h163","copy"],"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["tsina","qzone","weixin","fbook","twi","linkedin","youdao","evernotecn","mshare"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["tsina","qzone","weixin","fbook","twi","linkedin","youdao","evernotecn","mshare"]}};with(document)0[(getElementsByTagName('head')[0]||head).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script><script>window._config = { showScore: true };
+(function(){ 
+  var appid = 'cytd9dYiO'; 
+  var conf = 'prod_22b7a93926c43ba524212e070eb5c5fa'; 
+  var width = window.innerWidth || document.documentElement.clientWidth; 
+  var nodes =document.getElementsByTagName("head")[0]||document.head||document.documentElement;
+  if (/(Android|iPhone|iPad|iPod|iOS)/i.test(navigator.userAgent) && width < 750) {  
+      window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="http://changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>');
+  }
+  else { 
+    var loadJs=function(d,a){
+      var b=document.createElement("script");b.setAttribute("type","text/javascript");
+      b.setAttribute("charset","UTF-8");
+      b.setAttribute("src",d);
+      if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}
+      nodes.appendChild(b)
+    };
+    loadJs("http://changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})}); 
+  } 
+  var loadCss = function(cssString){  
+    var style=document.createElement("style");  
+    style.setAttribute("type", "text/css");  
+    if(style.styleSheet){// IE  
+        style.styleSheet.cssText = cssString;  
+    } else {// w3c  
+        var cssText = document.createTextNode(cssString);  
+        style.appendChild(cssText);  
+    }
+    nodes.appendChild(style);
+  }
+  window.onload=function(){loadCss('.module-hot-topic,.module-cmt-float-bar{display:none!important}#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w .wrap-action-w .cbox-prompt-w span.prompt-empty-w,#SOHUCS #SOHU_MAIN .module-cmt-float-bar .wrap-cont-w .cont-form-w .form-text-w span.text-null,#SOHUCS #SOHU_MAIN .module-cmt-float-bar .wrap-cont-w .cont-minwidth-w div.cont-comment-w a.comment-link-w,#SOHUCS #SOHU_MAIN .module-cmt-float-bar .wrap-cont-w .cont-minwidth-w div.cont-comment-w span.comment-text-w,#SOHUCS #SOHU_MAIN .module-cmt-footer .section-service-w div.service-wrap-w a:hover,#SOHUCS #SOHU_MAIN .module-cmt-header .section-cbox-w .block-head-w div.header-login,#SOHUCS #SOHU_MAIN .module-cmt-header .section-title-w .title-user-w .user-wrap-w span.wrap-name-w,#SOHUCS #SOHU_MAIN .module-cmt-list .action-click-gw span.click-disable-eg a em.icon-name-bg,#SOHUCS #SOHU_MAIN .module-cmt-list .block-title-gw ul li div.title-name-gw,#SOHUCS #SOHU_MAIN .module-cmt-list .cmt-list-type .cmt-list-number .comment-number span.cy-number,#SOHUCS #SOHU_MAIN .module-cmt-list .cmt-list-type .cmt-list-number span.comment-number,#SOHUCS #SOHU_MAIN .module-cmt-list .cmt-list-type .type-lists li.active,#SOHUCS #SOHU_MAIN .module-cmt-list .msg-wrap-gw .wrap-action-gw .action-click-gw span a:hover,#SOHUCS #SOHU_MAIN .module-cmt-list .picture-box-gw div.box-action-gw a:hover,#SOHUCS #SOHU_MAIN .module-cmt-list .wrap-action-gw .action-click-gw span a:hover em.icon-name-bg,#SOHUCS #SOHU_MAIN .module-cmt-list .wrap-user-gw span.user-name-gw a{color:#40759b!important}#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w .post-wrap-border-t div.post-wrap-border-t-r,#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w div.post-wrap-border-l,#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w div.post-wrap-border-r{display:none!important}#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w .post-wrap-border-t div.post-wrap-border-t-l{background:#FFF!important;top:-2px!important}#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w .wrap-action-w .action-function-w .uploading-wrapper-dw div.wrapper-image-dw,#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w div.post-wrap-main,#SOHUCS #SOHU_MAIN .module-cmt-float-bar .wrap-cont-w .cont-form-w div.form-text-w,#SOHUCS #SOHU_MAIN .module-cmt-header .section-cbox-w .block-head-w div.header-login,#SOHUCS #SOHU_MAIN .module-cmt-list .module-cmt-box .post-wrap-w div.post-wrap-main{border:1px solid #e6e6e6!important;border-radius:20px 20px 20px 20px;margin:0!important}#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w .wrap-action-w .action-issue-w .issue-btn-w a .btn-fw{width:130px!important;height:34px!important;line-height:33px!important;font-size:17px!important;background:#5483b1!important;border-radius:20px!important;color:#FFF!important;-webkit-box-shadow:0 -1px 4px #5483b1 inset;box-shadow:0 -1px 10px #5483b1 inset}#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w .wrap-action-w .action-issue-w .issue-btn-w a .btn-fw:before{content:"发表评论"}#SOHUCS #SOHU_MAIN .module-cmt-box .post-wrap-w .wrap-action-w .action-issue-w .issue-btn-w a:hover .btn-fw{color:#40759b!important;background:#FFF!important}#SOHUCS #SOHU_MAIN .module-cmt-list .cmt-list-type .type-lists li{background:none!important;border-bottom:1px solid #e6e6e6}#SOHUCS #SOHU_MAIN .module-cmt-list .cmt-list-type .type-lists li.active{border:1px solid #e6e6e6;border-radius:10px 10px 0 0;border-bottom:none}#SOHUCS #SOHU_MAIN .module-cmt-list .block-title-gw ul li .title-name-gw div.title-name-gw-tag{background:#5483b1!important;border-radius:3px}#SOHUCS #SOHU_MAIN .module-cmt-list .cmt-list-type div.cmt-list-border{background-color:#e6e6e6!important}#SOHUCS #SOHU_MAIN .module-cmt-notice ul.nt-list li.nt-item{border:1px solid #e6e6e6!important}#SOHUCS #SOHU_MAIN .module-cmt-notice ul.nt-list li.nt-item .nt-logo{text-align:center;line-height:40px;border-radius:50%!important;background:#e6e6e6!important}#SOHUCS #SOHU_MAIN .module-cmt-notice ul.nt-list li.nt-item .nt-logo:before{content:"畅";font-size:22px;color:#FFF}#SOHUCS #SOHU_MAIN .module-cmt-notice ul.nt-list li.nt-item a.nt-text,#SOHUCS #SOHU_MAIN .module-cmt-notice ul.nt-list li.nt-item a.nt-text i{color:#5483b1!important}#SOHUCS #SOHU_MAIN .module-cmt-header .section-title-w .title-user-w .user-wrap-w{background:#FFF!important}');};
+})();</script><script src="http://assets.changyan.sohu.com/upload/plugins/plugins.count.js"></script></body></html>
